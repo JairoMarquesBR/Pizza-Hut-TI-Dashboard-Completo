@@ -1,24 +1,25 @@
 /* =========================================
-   1. VARIÁVEIS DE TEMA
+   1. VARIÁVEIS DE TEMA E FONTES
    ========================================= */
 :root {
     --primary-color: #d32f2f; /* Vermelho Pizza Hut */
     --primary-dark: #b71c1c;
     --accent-color: #ffca28;
     
-    --bg-color: #f8f9fa;
+    --bg-color: #f8f9fa;      
     --card-bg: #ffffff;
     --text-color: #2c3e50;
     
     --footer-bg: #eceff1;
     --footer-text: #455a64;
-    --border-color: rgba(0, 0, 0, 0.08);
+    --border-color: rgba(0, 0, 0, 0.12);
 
-    /* FONTES */
+    /* Fontes */
     --font-main: 'Inter', sans-serif;
     --font-brand: 'Montserrat', sans-serif;
 }
 
+/* Modo Escuro */
 body.dark-theme {
     --bg-color: #121212;
     --card-bg: #1e1e1e;
@@ -29,7 +30,7 @@ body.dark-theme {
 }
 
 /* =========================================
-   2. TIPOGRAFIA & BASE
+   2. TIPOGRAFIA E ESTRUTURA BASE
    ========================================= */
 body {
     background-color: var(--bg-color);
@@ -39,7 +40,7 @@ body {
     min-height: 100vh;
     flex-direction: column;
     transition: background-color 0.3s;
-    padding-bottom: 35px;
+    padding-bottom: 40px; /* Espaço para o footer fixo */
 }
 
 main { flex: 1 0 auto; }
@@ -50,6 +51,7 @@ h1, h2, h3, h4, h5, h6, .card-title {
     letter-spacing: -0.5px;
 }
 
+/* Título da Página Principal */
 .header-title {
     margin-left: 0.5rem;
     font-weight: 800;
@@ -63,79 +65,84 @@ h1, h2, h3, h4, h5, h6, .card-title {
 }
 
 /* =========================================
-   3. NAVBAR & LOGO PROFISSIONAL (REFEITO)
+   3. NAVBAR & LOGO (CORRIGIDO)
    ========================================= */
+/* Altura fixa para evitar desalinhamento */
+.navbar-fixed, nav, .nav-wrapper i, a.sidenav-trigger, a.brand-logo {
+    height: 64px;
+    line-height: 64px;
+}
+
 .pizza-red { background-color: var(--primary-color) !important; }
 
-/* Novo Estilo Corporativo */
+.modern-nav {
+    background-color: var(--primary-color) !important;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+/* Wrapper Flexível para laterais */
+.nav-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+/* Logo Absoluto no Centro (Padrão Materialize seguro) */
+.brand-logo.center {
+    left: 50%;
+    transform: translateX(-50%);
+    position: absolute;
+    width: auto;
+    white-space: nowrap;
+}
+
 .brand-corporate {
     font-family: var(--font-brand);
     display: flex !important;
     align-items: center;
-    white-space: nowrap;
+    height: 100%;
 }
+.brand-corporate i { margin-right: 10px; font-size: 1.7rem; display: inline-block; line-height: 64px; }
+.brand-name { font-weight: 800; font-size: 1.4rem; letter-spacing: 0.5px; }
+.brand-separator { margin: 0 8px; font-weight: 300; opacity: 0.6; font-size: 1.4rem; }
+.brand-dept { font-weight: 700; font-size: 1.4rem; letter-spacing: 1px; opacity: 0.95; }
 
-.brand-corporate i {
-    margin-right: 12px;
-    font-size: 1.7rem;
-    opacity: 0.9;
-}
-
-.brand-name {
-    font-weight: 800; /* Peso forte para a marca principal */
-    font-size: 1.4rem;
-    letter-spacing: 0.5px;
-}
-
-.brand-separator {
-    margin: 0 10px;
-    font-weight: 300;
-    opacity: 0.6;
-    font-size: 1.4rem;
-}
-
-.brand-dept {
-    font-weight: 700; /* Peso ligeiramente menor ou igual para o departamento */
-    font-size: 1.4rem;
-    letter-spacing: 1px;
-    opacity: 0.95;
-}
-
-
-/* Menus do Topo */
+/* Menus */
 .nav-item {
     font-family: var(--font-main);
     font-weight: 600;
     text-transform: uppercase;
     font-size: 0.85rem;
     letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    height: 64px;
 }
 
+/* Avatar na Navbar */
+.nav-avatar {
+    width: 32px; height: 32px; border-radius: 50%; object-fit: cover;
+    margin-right: 10px; vertical-align: middle; border: 2px solid rgba(255,255,255,0.5);
+}
+.user-profile-trigger { display: flex; align-items: center; }
+
+/* Dropdowns */
 .dropdown-content { 
     background-color: var(--card-bg); 
     min-width: 200px; 
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     border-radius: 0 0 8px 8px;
 }
-.dropdown-content li > a { 
-    color: var(--text-color); 
-    font-weight: 500;
-    font-size: 0.9rem;
-}
-.dropdown-content li > a:hover {
-    background-color: rgba(0,0,0,0.03);
-    color: var(--primary-color);
-}
+.dropdown-content li > a { color: var(--text-color); font-weight: 500; font-size: 0.9rem; }
+.dropdown-content li > a:hover { background-color: rgba(0,0,0,0.03); color: var(--primary-color); }
+
+/* Menu Mobile BG */
+.pizza-red-bg { background-color: var(--primary-color) !important; }
 
 /* =========================================
-   4. CARDS (TILES)
+   4. CARDS E ANIMAÇÃO
    ========================================= */
-.container-fluid {
-    width: 96%;
-    max-width: 1600px;
-    margin: 0 auto;
-    padding-top: 25px;
-}
+.container-fluid { width: 96%; max-width: 1600px; margin: 0 auto; padding-top: 25px; }
 
 .tile-card {
     background-color: var(--card-bg);
@@ -151,28 +158,13 @@ h1, h2, h3, h4, h5, h6, .card-title {
     z-index: 1; 
 }
 
-.card-desc {
-    font-size: 0.85rem;
-    color: #78909c;
-    margin-bottom: 10px;
-    font-weight: 500;
-}
+.card-desc { font-size: 0.85rem; color: #78909c; margin-bottom: 10px; font-weight: 500; }
 body.dark-theme .card-desc { color: #9e9e9e; }
 
-.card-title {
-    font-size: 1.1rem !important;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
+.card-title { font-size: 1.1rem !important; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 .card-title i { color: var(--primary-color); margin-right: 10px; }
 
-.status-indicator h5 { 
-    font-family: var(--font-main);
-    font-weight: 700; 
-    font-size: 1.8rem;
-    margin: 5px 0 0 0; 
-}
+.status-indicator h5 { font-family: var(--font-main); font-weight: 700; font-size: 1.8rem; margin: 5px 0 0 0; }
 
 .card-action {
     border-top: 1px solid var(--border-color) !important;
@@ -187,66 +179,144 @@ body.dark-theme .card-desc { color: #9e9e9e; }
     letter-spacing: 1px;
 }
 
-/* Animação Pizza */
-@keyframes pizza-flow {
-    0% { background-position: 0 0, 15px 15px; }
-    100% { background-position: 30px 30px, 45px 45px; }
-}
+@keyframes pizza-flow { 0% { background-position: 0 0, 15px 15px; } 100% { background-position: 30px 30px, 45px 45px; } }
 .tile-card::before {
     content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: -1; 
-    background-image: 
-        radial-gradient(circle, var(--primary-color) 15%, transparent 16%),
-        radial-gradient(circle, var(--accent-color) 15%, transparent 16%);
+    background-image: radial-gradient(circle, var(--primary-color) 15%, transparent 16%), radial-gradient(circle, var(--accent-color) 15%, transparent 16%);
     background-size: 30px 30px; background-position: 0 0, 15px 15px; 
-    opacity: 0.02; 
-    animation: pizza-flow 4s linear infinite;
-    transition: opacity 0.3s;
+    opacity: 0.02; animation: pizza-flow 4s linear infinite; transition: opacity 0.3s;
 }
-.tile-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
-    border-color: rgba(211, 47, 47, 0.2);
-}
+.tile-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); border-color: rgba(211, 47, 47, 0.2); }
 .tile-card:hover::before { opacity: 0.08; animation-duration: 2s; }
 
 /* =========================================
-   5. MODAL & INPUTS
+   5. MODAL CORRIGIDA (ABSOLUTE LAYOUT)
    ========================================= */
 .modal {
     border-radius: 8px;
-    background-color: var(--card-bg);
-    color: var(--text-color);
+    background-color: var(--card-bg) !important;
+    color: var(--text-color) !important;
+    max-height: 85% !important;
+    width: 90% !important;
+    overflow: hidden !important; /* Esconde barra de rolagem da janela principal */
+    /* SEM DISPLAY FLEX AQUI */
 }
+
+/* Header Fixo no Topo */
 .modal-header {
+    position: absolute; top: 0; left: 0; width: 100%; height: 60px;
     padding: 15px 24px;
     background-color: var(--primary-color);
     color: white;
-    position: sticky; top: 0; z-index: 10;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 .modal-header h5 { margin: 0; font-size: 1.2rem; font-weight: 700; letter-spacing: 0.5px; }
-.modal-content { padding-top: 25px; background-color: var(--card-bg); }
-.modal-footer { background-color: var(--footer-bg); border-top: 1px solid var(--border-color); }
 
-body.dark-theme .input-field input, body.dark-theme .input-field textarea {
-    color: white; border-bottom: 1px solid #555;
+/* Conteúdo com Scroll Interno */
+.modal-content {
+    margin-top: 60px; 
+    margin-bottom: 56px;
+    height: calc(100% - 116px) !important;
+    overflow-y: auto !important;
+    padding: 25px 24px !important;
+    background-color: var(--card-bg) !important;
 }
-body.dark-theme .input-field label, body.dark-theme .input-field .prefix { color: #9e9e9e; }
+
+/* Footer Fixo no Fundo */
+.modal-footer {
+    position: absolute !important; bottom: 0; left: 0; width: 100%; height: 56px !important;
+    background-color: var(--footer-bg) !important;
+    border-top: 1px solid var(--border-color) !important;
+    padding: 10px 24px !important;
+    z-index: 10;
+}
+
+body.dark-theme .modal-footer .btn-flat { color: #fff; }
+
+/* --- CORREÇÃO DE INPUTS (DARK MODE & DISABLED) --- */
+body.dark-theme .input-field input, 
+body.dark-theme .input-field textarea, 
+body.dark-theme .input-field select {
+    color: white !important;
+    border-bottom: 1px solid #555 !important;
+}
+
+/* Inputs Desabilitados (Ex: Login na edição) */
+.input-field input:disabled {
+    color: rgba(0,0,0,0.5) !important;
+    border-bottom: 1px dotted rgba(0,0,0,0.2) !important;
+}
+body.dark-theme .input-field input:disabled {
+    color: #bdbdbd !important; /* Cinza claro legível */
+    border-bottom: 1px dotted #555 !important;
+}
+
+body.dark-theme .input-field label { color: #9e9e9e !important; }
+body.dark-theme .input-field label.active { color: var(--primary-color) !important; }
+body.dark-theme .input-field .prefix { color: #9e9e9e !important; }
+
+/* Selects */
+body.dark-theme .select-wrapper input.select-dropdown { color: var(--text-color) !important; border-bottom: 1px solid #555; }
+body.dark-theme .dropdown-content { background-color: #2c2c2c !important; }
+body.dark-theme .dropdown-content li > span { color: var(--primary-color) !important; }
+body.dark-theme .dropdown-content li:hover { background-color: rgba(255,255,255,0.05) !important; }
 
 /* =========================================
-   6. FOOTER (Barra de Status)
+   6. MENU DE CONTEXTO & ADMIN
+   ========================================= */
+.context-menu {
+    display: none; position: absolute; z-index: 9999;
+    background: var(--card-bg); border: 1px solid var(--border-color);
+    border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); width: 200px;
+}
+.context-menu ul { list-style: none; margin: 0; padding: 5px 0; }
+.context-menu li { padding: 10px 20px; cursor: pointer; font-size: 0.9rem; color: var(--text-color); display: flex; align-items: center; gap: 10px; }
+.context-menu li:hover { background-color: rgba(0,0,0,0.05); color: var(--primary-color); }
+.context-menu li i { font-size: 1.2rem; color: #757575; }
+.context-menu li:hover i { color: var(--primary-color); }
+.context-menu li.divider { height: 1px; margin: 5px 0; padding: 0; background-color: var(--border-color); }
+
+/* Elementos Internos da Modal Preferências */
+.profile-hero {
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white; padding: 20px; border-radius: 8px; display: flex; align-items: center; gap: 20px;
+    margin-bottom: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+.profile-avatar i { font-size: 3.5rem; color: rgba(255,255,255,0.9); }
+.profile-info { flex-grow: 1; }
+.role-tag { display: inline-block; background: rgba(255,255,255,0.2); padding: 2px 10px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; margin-top: 5px; text-transform: uppercase; }
+.setting-card {
+    background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 15px 20px;
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
+}
+body.dark-theme .setting-card { background: #252525; }
+.setting-name { font-weight: 600; display: flex; align-items: center; gap: 8px; color: var(--text-color); }
+.setting-desc { font-size: 0.8rem; color: #90a4ae; margin-top: 2px; display: block; }
+
+.admin-card { border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; margin-bottom: 25px; }
+.admin-header { background: #f5f5f5; padding: 10px 20px; border-bottom: 1px solid var(--border-color); font-weight: 600; color: var(--text-color); display: flex; align-items: center; gap: 8px; }
+.admin-header i { color: var(--primary-color); }
+.admin-body { padding: 20px; background: var(--card-bg); }
+body.dark-theme .admin-header { background: #333; color: #fff; border-bottom-color: #444; }
+body.dark-theme .admin-body { background: #1e1e1e; }
+
+.modern-table { border: 1px solid var(--border-color); border-radius: 8px; }
+.modern-table thead { background: #fafafa; border-bottom: 1px solid var(--border-color); }
+.modern-table th { font-size: 0.8rem; text-transform: uppercase; color: #78909c; font-weight: 600; }
+.modern-table td { color: var(--text-color); font-weight: 500; }
+body.dark-theme .modern-table thead { background: #252525; }
+
+/* =========================================
+   7. FOOTER (Barra de Status)
    ========================================= */
 .status-bar {
     position: fixed; bottom: 0; left: 0; width: 100%; height: 32px;
-    background-color: #263238;
-    color: #cfd8dc;
+    background-color: #263238; color: #cfd8dc;
     display: flex; align-items: center;
     padding: 0 20px;
-    font-size: 0.75rem;
-    font-family: var(--font-main);
-    font-weight: 500;
-    z-index: 2000;
-    box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
-    letter-spacing: 0.5px;
+    font-size: 0.75rem; font-family: var(--font-main); font-weight: 500;
+    z-index: 2000; box-shadow: 0 -2px 5px rgba(0,0,0,0.1); letter-spacing: 0.5px;
 }
 body.dark-theme .status-bar { background-color: #000000; border-top: 1px solid #333; }
 
@@ -254,9 +324,8 @@ body.dark-theme .status-bar { background-color: #000000; border-top: 1px solid #
 .status-item strong { color: #ffffff; font-weight: 700; }
 #clock { font-feature-settings: "tnum"; font-variant-numeric: tabular-nums; letter-spacing: 1px; }
 
-@keyframes pulse-text {
-    0% { color: inherit; }
-    50% { color: var(--accent-color); transform: scale(1.05); }
-    100% { color: inherit; }
-}
+.action-btn { padding: 0 8px; background: transparent; border: none; cursor: pointer; }
+.action-btn:hover { background-color: rgba(0,0,0,0.05); border-radius: 4px; }
+
+@keyframes pulse-text { 0% { color: inherit; } 50% { color: var(--accent-color); transform: scale(1.05); } 100% { color: inherit; } }
 .pulse-effect { animation: pulse-text 0.5s ease; }

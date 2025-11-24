@@ -1,64 +1,95 @@
 <div class="modal-content-wrapper">
-    <h5><i class="material-icons left">tune</i>Configurações de Conta</h5>
+    
+    <div class="profile-hero z-depth-1">
+        <div class="profile-avatar">
+            <img id="hero-avatar-img" src="" style="display:none; width:100%; height:100%; border-radius:50%; object-fit:cover;">
+            <i id="hero-avatar-icon" class="material-icons">account_circle</i>
+        </div>
+        <div class="profile-info">
+            <small>Bem-vindo,</small>
+            <h4 id="pref-username">Carregando...</h4>
+            <div class="role-tag" id="pref-role">...</div>
+        </div>
+    </div>
 
-    <div class="card-panel grey lighten-5 z-depth-0 border-left-pizza">
-        <div class="row valign-wrapper" style="margin-bottom:0;">
-            <div class="col s2 center"><i class="material-icons medium grey-text">account_circle</i></div>
-            <div class="col s10">
-                <h6 style="margin:0; font-weight:bold;" id="pref-username">Carregando...</h6>
-                <span class="badge red white-text left" style="margin-left:0; margin-top:5px;" id="pref-role">...</span>
+    <div class="settings-section">
+        <h6 class="section-title">INTERFACE</h6>
+        <div class="setting-card">
+            <div class="setting-info">
+                <span class="setting-name"><i class="material-icons">dark_mode</i> Modo Escuro</span>
+            </div>
+            <div class="setting-control">
+                <div class="switch">
+                    <label><input type="checkbox" id="pref-theme"><span class="lever"></span></label>
+                </div>
             </div>
         </div>
-        <div class="row" style="margin-top:10px; margin-bottom:0;">
-             <div class="col s12 right-align">
-                 <button class="btn-flat red-text waves-effect" onclick="window.logout()">
-                     <i class="material-icons left">exit_to_app</i>Sair da Conta
-                 </button>
-             </div>
-        </div>
     </div>
 
-    <div id="admin-user-manager" style="display:none; margin-top: 30px; border-top: 1px solid #ddd; padding-top: 20px;">
-        <h5><i class="material-icons left">supervisor_account</i>Gerenciar Equipe</h5>
-        <p class="grey-text">Adicione ou remova acesso ao sistema.</p>
+    <div id="admin-user-manager" style="display:none; margin-top: 30px;">
+        <div class="divider-custom"></div>
+        <h6 class="section-title red-text text-darken-1">GESTÃO DE EQUIPE</h6>
 
-        <table class="highlight responsive-table">
-            <thead>
-                <tr>
-                    <th>Usuário</th>
-                    <th>Cargo</th>
-                    <th class="right-align">Ações</th>
-                </tr>
-            </thead>
-            <tbody id="users-table-body">
-                </tbody>
-        </table>
+        <div class="admin-card">
+            <div class="admin-header"><span><i class="material-icons">person_add</i> Gerenciar Usuário</span></div>
+            <div class="admin-body">
+                <form id="user-form">
+                    
+                    <div class="center-align" style="margin-bottom: 15px;">
+                        <img id="form-avatar-preview" src="" style="width:80px; height:80px; border-radius:50%; object-fit:cover; display:none; border: 2px solid #ccc;">
+                        <i id="form-avatar-icon" class="material-icons grey-text text-lighten-1" style="font-size: 80px;">account_circle</i>
+                    </div>
 
-        <div class="card-panel z-depth-1" style="margin-top: 20px; background-color: var(--bg-color);">
-            <span class="card-title" id="form-title">Adicionar Novo Usuário</span>
-            <form id="user-form">
-                <div class="row" style="margin-bottom: 0;">
-                    <div class="input-field col s4">
-                        <input id="form-username" type="text" required>
-                        <label for="form-username">Login</label>
+                    <div class="row" style="margin-bottom: 0;">
+                        <div class="input-field col s12 m4">
+                            <input id="form-username" type="text" required>
+                            <label for="form-username">Login</label>
+                        </div>
+                        <div class="input-field col s12 m4">
+                            <input id="form-password" type="password" placeholder="Senha">
+                            <label for="form-password" class="active">Senha</label>
+                        </div>
+                        <div class="input-field col s12 m4">
+                            <select id="form-role">
+                                <option value="user">Caixa (User)</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                            <label>Cargo</label>
+                        </div>
                     </div>
-                    <div class="input-field col s4">
-                        <input id="form-password" type="password" required>
-                        <label for="form-password">Senha</label>
+
+                    <div class="file-field input-field">
+                        <div class="btn pizza-red btn-small">
+                            <span>Foto</span>
+                            <input type="file" id="form-file" accept="image/*">
+                        </div>
+                        <div class="file-path-wrapper">
+                            <input class="file-path validate" type="text" placeholder="Selecione uma foto de perfil">
+                        </div>
                     </div>
-                    <div class="input-field col s4">
-                        <select id="form-role">
-                            <option value="user">Caixa (User)</option>
-                            <option value="admin">Gerente (Admin)</option>
-                        </select>
-                        <label>Cargo</label>
+
+                    <div class="row right-align" style="margin-bottom: 0; margin-top: 10px;">
+                        <span class="btn-flat waves-effect" onclick="resetUserForm()">Limpar</span>
+                        <button type="submit" class="btn pizza-red waves-effect waves-light">Salvar</button>
                     </div>
-                </div>
-                <div class="row right-align" style="margin-bottom: 0;">
-                    <button type="button" class="btn-flat waves-effect" onclick="resetUserForm()">Limpar</button>
-                    <button type="submit" class="btn pizza-red waves-effect waves-light"><i class="material-icons left">save</i>Salvar</button>
-                </div>
-            </form>
+                </form>
+            </div>
+        </div>
+
+        <div class="users-list-container">
+            <h6 class="list-title">Lista de Usuários</h6>
+            <table class="highlight modern-table">
+                <thead>
+                    <tr>
+                        <th style="width:50px;">Foto</th>
+                        <th>Login</th>
+                        <th>Cargo</th>
+                        <th class="right-align">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="users-table-body"></tbody>
+            </table>
         </div>
     </div>
+    <br>
 </div>

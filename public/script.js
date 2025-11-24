@@ -1,5 +1,5 @@
 // ======================================================
-// 0. VERIFICAÇÃO DE SEGURANÇA
+// 0. SEGURANÇA E GLOBAIS
 // ======================================================
 (function securityCheck() {
     const isLoginPage = window.location.pathname.includes('login.html');
@@ -8,76 +8,110 @@
     }
 })();
 
+let avatarBase64 = null;
+
 document.addEventListener('DOMContentLoaded', function() {
     if(window.location.pathname.includes('login.html')) return;
 
-    // Inicializações Materialize (SEM TOOLTIPS)
     M.Sidenav.init(document.querySelectorAll('.sidenav'));
     M.Dropdown.init(document.querySelectorAll('.dropdown-trigger'), {
         coverTrigger: false, constrainWidth: false, alignment: 'left'
     });
+    M.Tooltip.init(document.querySelectorAll('.tooltipped'));
     
     var modalElem = document.querySelector('#main-modal');
     var modalInstance = M.Modal.init(modalElem, {
-        startingTop: '4%', endingTop: '5%'
+        startingTop: '4%', endingTop: '5%', dismissible: true
     });
 
     setupModalTriggers(modalInstance);
+    setupContextMenu();
     startClock();
-    
-    // Dados Reais
-    fetchRealNetworkInfo();
-    measurePing();
+    initRealtimeNetworkMonitor();
+    fetchPublicIPInfo();
+    detectSystemInfo();
     fetchDashboardData();
-    
+    updateNavbarAvatar();
     checkThemePreference();
     applyAccessControl();
 });
 
 // ======================================================
-// 1. DADOS DE REDE (PING / IP)
+// 1. LÓGICA DE REDE E SISTEMA
 // ======================================================
+function detectSystemInfo() {
+    const osEl = document.getElementById('net-os');
+    if(!osEl) return;
+    let os = "Desconhecido";
+    if (navigator.appVersion.indexOf("Win") != -1) os = "Windows";
+    if (navigator.appVersion.indexOf("Mac") != -1) os = "MacOS";
+    if (navigator.appVersion.indexOf("Linux") != -1) os = "Linux";
+    if (navigator.appVersion.indexOf("Android") != -1) os = "Android";
+    osEl.innerText = os;
+}
 
-async function fetchRealNetworkInfo() {
-    const ipEl = document.getElementById('real-ip');
-    const ispEl = document.getElementById('real-isp');
-
+async function fetchPublicIPInfo() {
+    const ipEl = document.getElementById('net-ip');
+    const ispEl = document.getElementById('net-isp');
     try {
         const response = await fetch('https://ipapi.co/json/');
         const data = await response.json();
-
-        if(ipEl) ipEl.textContent = data.ip;
-        if(ispEl) ispEl.textContent = `${data.org} (${data.city})`;
+        if(ipEl) ipEl.innerText = data.ip;
+        if(ispEl) ispEl.innerText = `${data.org} (${data.city})`;
     } catch (error) {
-        console.error("Erro ao buscar IP", error);
-        if(ipEl) ipEl.textContent = "Indisponível";
-        if(ispEl) ispEl.textContent = "Offline";
+        if(ipEl) ipEl.innerText = "Indisponível";
+        if(ispEl) ispEl.innerText = "Rede Local";
     }
 }
 
-function measurePing() {
-    const pingEl = document.getElementById('real-ping');
-    
+function initRealtimeNetworkMonitor() {
+    const statusEl = document.getElementById('net-status');
+    const iconEl = document.getElementById('net-icon');
+    const pingEl = document.getElementById('net-ping');
+
+    function updateStatus() {
+        if (navigator.onLine) {
+            statusEl.innerText = "ONLINE";
+            statusEl.className = "green-text text-lighten-3";
+            iconEl.className = "material-icons tiny green-text text-lighten-3";
+        } else {
+            statusEl.innerText = "OFFLINE";
+            statusEl.className = "red-text";
+            iconEl.className = "material-icons tiny red-text";
+            if(pingEl) pingEl.innerText = "--";
+        }
+    }
+    window.addEventListener('online', updateStatus);
+    window.addEventListener('offline', updateStatus);
+    updateStatus();
+
     setInterval(async () => {
-        const start = Date.now();
+        if (!navigator.onLine) return;
+        const start = performance.now();
         try {
             await fetch(window.location.href, { method: 'HEAD' });
-            const end = Date.now();
-            const latency = end - start;
-            
-            if(pingEl) {
-                pingEl.textContent = `${latency}ms`;
-                pingEl.className = latency < 100 ? 'green-text' : (latency < 300 ? 'orange-text' : 'red-text');
-            }
-        } catch (e) {
-            if(pingEl) pingEl.textContent = "Time-out";
-        }
-    }, 3000);
+            const latency = Math.round(performance.now() - start);
+            if(pingEl) pingEl.innerText = `${latency} ms`;
+        } catch (e) { if(pingEl) pingEl.innerText = "Timeout"; }
+    }, 2000);
 }
 
 // ======================================================
-// 2. CONTROLE DE ACESSO
+// 2. SISTEMA: AUTH, MODAL E CRUD
 // ======================================================
+function setupContextMenu() {
+    const menu = document.getElementById('custom-context-menu');
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        let x = e.clientX, y = e.clientY;
+        if (x + 200 > window.innerWidth) x = window.innerWidth - 210;
+        if (y + 200 > window.innerHeight) y = window.innerHeight - 210;
+        menu.style.top = `${y}px`;
+        menu.style.left = `${x}px`;
+        menu.style.display = 'block';
+    });
+    document.addEventListener('click', () => menu.style.display = 'none');
+}
 
 function getCurrentUser() {
     const session = sessionStorage.getItem('pizzaUserUI');
@@ -86,65 +120,60 @@ function getCurrentUser() {
 
 function applyAccessControl() {
     const user = getCurrentUser();
-    if (!user) return;
-    if (user.role !== 'admin') {
-        document.querySelectorAll('.admin-only').forEach(el => {
-            el.style.display = 'none'; 
-        });
+    if (user && user.role !== 'admin') {
+        document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
     }
 }
 
 window.logout = async function() {
-    try {
-        await fetch('/api/logout', { method: 'POST' });
-    } catch (e) {
-        console.error("Erro logout", e);
-    } finally {
-        sessionStorage.clear();
-        window.location.href = 'login.html';
-    }
+    try { await fetch('/api/logout', { method: 'POST' }); } catch (e) {} 
+    finally { sessionStorage.clear(); window.location.href = 'login.html'; }
 }
 
-// ======================================================
-// 3. DADOS DASHBOARD
-// ======================================================
+function updateNavbarAvatar() {
+    const user = getCurrentUser();
+    if (!user) return;
+    const navImg = document.getElementById('nav-user-avatar');
+    const navIcon = document.getElementById('nav-user-icon');
+    const mobImg = document.getElementById('mobile-user-avatar');
+    const mobName = document.getElementById('mobile-username');
+    const src = user.avatar ? user.avatar : `https://ui-avatars.com/api/?name=${user.name}&background=d32f2f&color=fff`;
+
+    if(navImg && navIcon) {
+        navImg.src = user.avatar || src;
+        navImg.style.display = user.avatar ? 'inline-block' : 'none';
+        navIcon.style.display = user.avatar ? 'none' : 'inline-block';
+    }
+    if(mobImg) mobImg.src = src;
+    if(mobName) mobName.innerText = user.name;
+}
 
 function fetchDashboardData() {
     const updateUI = async () => {
         try {
             const response = await fetch('/api/dashboard-data');
-            if (response.status === 401 || response.status === 403) {
-                window.logout();
-                return;
-            }
+            if (response.status === 401) return window.logout();
             const data = await response.json();
-            
-            const clientEl = document.getElementById('client-count');
-            if(clientEl) {
-                if (clientEl.textContent != data.clients) {
-                    clientEl.textContent = data.clients;
-                    clientEl.closest('.status-indicator')?.classList.add('pulse-effect');
-                    setTimeout(() => clientEl.closest('.status-indicator')?.classList.remove('pulse-effect'), 500);
-                }
+            const el = document.getElementById('client-count');
+            if(el && el.textContent != data.clients) {
+                el.textContent = data.clients;
+                el.closest('.status-indicator')?.classList.add('pulse-effect');
+                setTimeout(() => el.closest('.status-indicator')?.classList.remove('pulse-effect'), 500);
             }
-        } catch (error) { console.error(error); }
+        } catch (error) {}
     };
     updateUI();
     setInterval(updateUI, 5000);
 }
 
-// ======================================================
-// 4. MODAIS
-// ======================================================
-
+// --- MODAL LOGIC ---
 function setupModalTriggers(modalInstance) {
-    const triggers = document.querySelectorAll('.action-trigger');
-    triggers.forEach(trigger => {
-        trigger.addEventListener('click', function(e) {
-            e.preventDefault(); 
-            const title = this.getAttribute('data-title') || 'Detalhes';
-            const fileName = this.getAttribute('data-file') || 'modal-default.html';
-            openDynamicModal(modalInstance, title, fileName);
+    document.querySelectorAll('.action-trigger').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const title = this.getAttribute('data-title');
+            const file = this.getAttribute('data-file') || 'modal-default.html';
+            openDynamicModal(modalInstance, title, file);
         });
     });
 }
@@ -152,144 +181,160 @@ function setupModalTriggers(modalInstance) {
 async function openDynamicModal(instance, title, fileUrl) {
     document.getElementById('modal-title').innerText = title;
     instance.open();
-    const contentContainer = document.getElementById('modal-body-placeholder');
-    
+    const content = document.getElementById('modal-body-placeholder');
     try {
-        const response = await fetch(fileUrl);
-        if (!response.ok) throw new Error(`Arquivo não encontrado`);
+        const res = await fetch(fileUrl);
+        if(!res.ok) throw new Error();
+        const html = await res.text();
+        content.innerHTML = html;
         
-        await new Promise(r => setTimeout(r, 200)); 
-        const htmlContent = await response.text();
-        contentContainer.innerHTML = htmlContent;
-
-        // Reinicializações
         M.updateTextFields();
         const textareas = document.querySelectorAll('.materialize-textarea');
         if (textareas.length > 0) textareas.forEach(t => M.textareaAutoResize(t));
-        
-        M.Datepicker.init(document.querySelectorAll('.datepicker'), { autoClose: true, format: 'dd/mm/yyyy', container: document.body });
+        M.Datepicker.init(document.querySelectorAll('.datepicker'), { autoClose: true, container: document.body });
         M.FormSelect.init(document.querySelectorAll('select'));
         
-        if (fileUrl.includes('preferences')) initPreferencesLogic();
-
-    } catch (error) {
-        contentContainer.innerHTML = `<div class="center-align red-text" style="padding:40px;"><p>Erro ao carregar módulo.</p></div>`;
-    }
+        if(fileUrl.includes('preferences')) initPreferencesLogic();
+    } catch (e) { content.innerHTML = '<p class="red-text">Erro ao carregar.</p>'; }
 }
 
-// ======================================================
-// 5. LÓGICA PREFERÊNCIAS
-// ======================================================
-
+// --- PREFERÊNCIAS E CRUD ---
 function initPreferencesLogic() {
     const user = getCurrentUser();
     if (!user) return;
-
     document.getElementById('pref-username').innerText = user.name;
     document.getElementById('pref-role').innerText = user.role.toUpperCase();
-
-    if (user.role === 'admin') {
-        const adminPanel = document.getElementById('admin-user-manager');
-        if (adminPanel) {
-            adminPanel.style.display = 'block'; 
-            loadUsersList(); 
-            setupUserForm(); 
-        }
+    
+    const heroImg = document.getElementById('hero-avatar-img');
+    const heroIcon = document.getElementById('hero-avatar-icon');
+    if(user.avatar && heroImg) {
+        heroImg.src = user.avatar; heroImg.style.display = 'block'; heroIcon.style.display = 'none';
     }
 
-    const isDark = localStorage.getItem('theme') === 'dark';
+    if (user.role === 'admin') {
+        const panel = document.getElementById('admin-user-manager');
+        if(panel) { panel.style.display = 'block'; loadUsersList(); setupUserForm(); }
+    }
+    
     const themeSwitch = document.getElementById('pref-theme');
     if(themeSwitch) {
-        themeSwitch.checked = isDark;
+        themeSwitch.checked = localStorage.getItem('theme') === 'dark';
         themeSwitch.addEventListener('change', toggleTheme);
     }
 }
 
 async function loadUsersList() {
     const tbody = document.getElementById('users-table-body');
-    tbody.innerHTML = '<tr><td colspan="3" class="center">Carregando...</td></tr>';
+    if(!tbody) return;
     try {
-        const response = await fetch('/api/users');
-        const users = await response.json();
-        tbody.innerHTML = ''; 
+        const res = await fetch('/api/users');
+        const users = await res.json();
+        tbody.innerHTML = '';
         users.forEach(u => {
+            const avatar = u.avatar ? `<img src="${u.avatar}" class="circle" style="width:30px;height:30px;object-fit:cover;">` : '<i class="material-icons">person</i>';
             const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td style="font-weight:bold;">${u.username}</td>
-                <td><span class="new badge ${u.role === 'admin' ? 'red' : 'grey'}" data-badge-caption="">${u.role}</span></td>
-                <td class="right-align">
-                    <button class="btn-small btn-flat red-text" onclick="deleteUser('${u.username}')"><i class="material-icons">delete</i></button>
-                </td>
-            `;
+            tr.innerHTML = `<td>${avatar}</td><td>${u.username}</td><td>${u.role}</td><td class="right-align"><button class="action-btn blue-text btn-edit"><i class="material-icons">edit</i></button><button class="action-btn red-text" onclick="deleteUser('${u.username}')"><i class="material-icons">delete</i></button></td>`;
+            tr.querySelector('.btn-edit').addEventListener('click', () => editUser(u));
             tbody.appendChild(tr);
         });
-    } catch (error) { tbody.innerHTML = '<tr><td colspan="3" class="red-text center">Erro ao carregar.</td></tr>'; }
+    } catch(e) {}
 }
 
 function setupUserForm() {
     const form = document.getElementById('user-form');
+    const fileInput = document.getElementById('form-file');
+    if(!form) return;
     M.FormSelect.init(document.querySelectorAll('select'));
-    form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const username = document.getElementById('form-username').value;
-        const password = document.getElementById('form-password').value;
-        const role = document.getElementById('form-role').value;
-        try {
-            const response = await fetch('/api/users', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, password, role })
-            });
-            if (response.ok) {
-                M.toast({html: 'Salvo!', classes: 'green'});
-                resetUserForm();
-                loadUsersList();
-            } else {
-                const res = await response.json();
-                M.toast({html: res.message, classes: 'red'});
+
+    if(fileInput) {
+        fileInput.addEventListener('change', function() {
+            const file = this.files[0];
+            if(file) {
+                const r = new FileReader();
+                r.onload = (e) => { 
+                    avatarBase64 = e.target.result; 
+                    document.getElementById('form-avatar-preview').src = avatarBase64;
+                    document.getElementById('form-avatar-preview').style.display='inline-block';
+                    document.getElementById('form-avatar-icon').style.display='none';
+                };
+                r.readAsDataURL(file);
             }
-        } catch (error) { M.toast({html: 'Erro.', classes: 'red'}); }
-    });
+        });
+    }
+
+    form.onsubmit = async (e) => {
+        e.preventDefault();
+        const u = document.getElementById('form-username').value;
+        const p = document.getElementById('form-password').value;
+        const r = document.getElementById('form-role').value;
+        const isEdit = document.getElementById('form-username').disabled;
+        const method = isEdit ? 'PUT' : 'POST';
+        const url = isEdit ? `/api/users/${u}` : '/api/users';
+        const body = { username: u, password: p, role: r };
+        if(avatarBase64) body.avatar = avatarBase64;
+
+        await fetch(url, { method: method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) });
+        
+        const current = getCurrentUser();
+        if(current.username === u) {
+            if(avatarBase64) current.avatar = avatarBase64;
+            current.role = r;
+            sessionStorage.setItem('pizzaUserUI', JSON.stringify(current));
+            updateNavbarAvatar();
+            initPreferencesLogic();
+        }
+        
+        resetUserForm();
+        loadUsersList();
+        M.toast({html: 'Salvo!', classes: 'green'});
+    };
 }
 
-window.deleteUser = async function(username) {
-    if(!confirm(`Remover "${username}"?`)) return;
-    try {
-        const response = await fetch(`/api/users/${username}`, { method: 'DELETE' });
-        if (response.ok) { M.toast({html: 'Removido.', classes: 'green'}); loadUsersList(); }
-    } catch (error) { console.error(error); }
-};
+// --- FUNÇÃO EDIT CORRIGIDA ---
+window.editUser = function(u) {
+    avatarBase64 = null;
+    const userInput = document.getElementById('form-username');
+    const passInput = document.getElementById('form-password');
+    
+    // Preenche valores
+    userInput.value = u.username;
+    userInput.disabled = true;
+    document.getElementById('form-role').value = u.role;
+    passInput.value = '';
+    passInput.placeholder = '(Opcional)';
+    
+    // Força o label a subir (O segredo do bug)
+    M.updateTextFields();
+    
+    // Se o label ainda não subiu, força manual
+    if (passInput.nextElementSibling) {
+        passInput.nextElementSibling.classList.add('active');
+    }
+
+    document.getElementById('form-title').innerText = `Edit: ${u.username}`;
+    
+    const preview = document.getElementById('form-avatar-preview');
+    const icon = document.getElementById('form-avatar-icon');
+    if(u.avatar) { preview.src = u.avatar; preview.style.display = 'inline-block'; icon.style.display = 'none'; }
+    else { preview.style.display = 'none'; icon.style.display = 'inline-block'; }
+    
+    M.FormSelect.init(document.querySelectorAll('select'));
+    userInput.scrollIntoView({behavior: "smooth"});
+}
 
 window.resetUserForm = function() {
-    document.getElementById('user-form').reset();
+    const form = document.getElementById('user-form');
+    if(form) form.reset();
+    avatarBase64 = null;
+    document.getElementById('form-username').disabled = false;
+    document.getElementById('form-password').placeholder = 'Senha';
+    document.getElementById('form-title').innerText = 'Novo Usuário';
+    document.getElementById('form-avatar-preview').style.display = 'none';
+    document.getElementById('form-avatar-icon').style.display = 'inline-block';
     M.updateTextFields();
+    M.FormSelect.init(document.querySelectorAll('select'));
 };
 
-// ======================================================
-// 6. UTILITÁRIOS
-// ======================================================
-
-function startClock() {
-    setInterval(() => {
-        const el = document.getElementById('clock');
-        if(el) el.textContent = new Date().toLocaleTimeString('pt-BR');
-    }, 1000);
-}
-
-function toggleTheme() {
-    const body = document.body;
-    const icon = document.getElementById('theme-icon');
-    body.classList.toggle('dark-theme');
-    const isDark = body.classList.contains('dark-theme');
-    if (icon) icon.textContent = isDark ? 'brightness_7' : 'brightness_4';
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-}
-
-function checkThemePreference() {
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') {
-        document.body.classList.add('dark-theme');
-        const icon = document.getElementById('theme-icon');
-        if(icon) icon.textContent = 'brightness_7';
-    }
-}
+function startClock() { setInterval(() => { document.getElementById('clock').textContent = new Date().toLocaleTimeString('pt-BR'); }, 1000); }
+function toggleTheme() { document.body.classList.toggle('dark-theme'); localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light'); }
+function checkThemePreference() { if(localStorage.getItem('theme') === 'dark') document.body.classList.add('dark-theme'); }

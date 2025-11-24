@@ -1,0 +1,17 @@
+# Dependências do Node (Nunca envie isso!)
+node_modules/
+
+# Logs e depuração
+*.log
+npm-debug.log*
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# Banco de Dados (Opcional: Geralmente não se versiona o banco real)
+# Se você quiser salvar o banco no git, remova a linha abaixo:
+*.db
+
+# Arquivos de ambiente (Senhas reais)
+.env

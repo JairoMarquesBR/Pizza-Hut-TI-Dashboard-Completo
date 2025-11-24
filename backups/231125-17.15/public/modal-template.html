@@ -1,0 +1,48 @@
+<div class="modal-content-wrapper">
+    <div class="row">
+        <div class="col s12">
+            <p class="flow-text" id="dynamic-description">Carregando contexto...</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <form class="col s12">
+            <div class="row">
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">mode_edit</i>
+                    <input id="input_fake" type="text" class="validate">
+                    <label for="input_fake">Nome do Registro</label>
+                </div>
+                <div class="input-field col s6">
+                    <i class="material-icons prefix">date_range</i>
+                    <input type="text" class="datepicker" placeholder="Selecione Data">
+                    <span class="helper-text">Vencimento</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s12">
+                    <i class="material-icons prefix">comment</i>
+                    <textarea id="textarea1" class="materialize-textarea"></textarea>
+                    <label for="textarea1">Observações</label>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col s12">
+                    <div class="switch">
+                        <label>
+                            Bloqueado
+                            <input type="checkbox" checked>
+                            <span class="lever"></span>
+                            Ativo
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="modal-system-info right-align">
+        <small class="grey-text">ID Transação: #<span id="random-id">0000</span></small>
+    </div>
+</div>

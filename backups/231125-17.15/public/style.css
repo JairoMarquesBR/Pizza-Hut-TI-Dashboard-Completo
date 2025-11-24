@@ -1,0 +1,225 @@
+/* =========================================
+   1. VARIÁVEIS DE TEMA
+   ========================================= */
+:root {
+    --primary-color: #d32f2f; /* Vermelho Pizza */
+    --primary-dark: #9a0007;
+    --accent-color: #ffab00;  /* Amarelo Queijo */
+    
+    --bg-color: #f4f4f4;
+    --card-bg: #ffffff;
+    --text-color: #333333;
+    
+    --footer-bg: #e0e0e0;
+    --footer-text: #424242;
+    --border-color: rgba(160, 160, 160, 0.2);
+}
+
+body.dark-theme {
+    --bg-color: #121212;
+    --card-bg: #1e1e1e;
+    --text-color: #e0e0e0;
+    --footer-bg: #2c2c2c;
+    --footer-text: #ffffff;
+    --border-color: #333333;
+}
+
+/* =========================================
+   2. ESTRUTURA BASE
+   ========================================= */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    transition: background-color 0.3s, color 0.3s;
+    padding-bottom: 40px; /* Espaço para o footer fixo */
+}
+
+main { flex: 1 0 auto; }
+
+/* Navbar e Menus */
+.pizza-red { background-color: var(--primary-color) !important; }
+
+.nav-wrapper .dropdown-trigger {
+    font-weight: 500;
+    text-transform: capitalize;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    padding: 0 15px;
+}
+
+.dropdown-content { background-color: var(--card-bg); min-width: 200px; }
+.dropdown-content li > a { color: var(--primary-color); }
+body.dark-theme .dropdown-content li > a { color: var(--accent-color); }
+
+/* Container Fluido Ultra-Wide */
+.container-fluid {
+    width: 96%;
+    max-width: 2560px;
+    margin: 0 auto;
+    padding-top: 25px;
+}
+
+.header-title {
+    margin-left: 0.5rem;
+    font-weight: 300;
+    margin-bottom: 25px;
+    border-left: 4px solid var(--primary-color);
+    padding-left: 15px;
+}
+
+/* =========================================
+   3. ANIMAÇÃO DE FUNDO "PIZZA PATTERN"
+   ========================================= */
+
+@keyframes pizza-flow {
+    0% { background-position: 0 0, 15px 15px; }
+    100% { background-position: 30px 30px, 45px 45px; }
+}
+
+.tile-card {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border-radius: 8px;
+    height: 100%;
+    cursor: pointer;
+    border: 1px solid transparent;
+    position: relative;
+    overflow: hidden; 
+    z-index: 1; 
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.3s;
+}
+
+.tile-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: -1; 
+    background-image: 
+        radial-gradient(circle, var(--primary-color) 15%, transparent 16%),
+        radial-gradient(circle, var(--accent-color) 15%, transparent 16%);
+    background-size: 30px 30px; 
+    background-position: 0 0, 15px 15px; 
+    opacity: 0.03; 
+    animation: pizza-flow 4s linear infinite;
+    transition: opacity 0.3s ease, animation-duration 0.3s ease;
+}
+
+.tile-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 17px 2px rgba(0,0,0,0.14), 0 3px 14px 2px rgba(0,0,0,0.12);
+    border-color: rgba(211, 47, 47, 0.3);
+}
+
+.tile-card:hover::before {
+    opacity: 0.12; 
+    animation-duration: 2s; 
+}
+
+body.dark-theme .tile-card::before { opacity: 0.05; }
+body.dark-theme .tile-card:hover::before { opacity: 0.15; }
+
+.card-content { padding: 24px; }
+.card-title {
+    font-size: 1.3rem !important;
+    display: flex;
+    align-items: center;
+    font-weight: 400;
+}
+.card-title i { margin-right: 12px; color: var(--primary-color); }
+
+.card-action {
+    border-top: 1px solid var(--border-color) !important;
+    background-color: rgba(0,0,0,0.02) !important;
+    padding: 16px 24px !important;
+}
+.card-action a {
+    color: var(--primary-color) !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+}
+
+/* =========================================
+   4. MODAL
+   ========================================= */
+.modal {
+    border-radius: 8px;
+    max-height: 90% !important;
+    background-color: var(--card-bg);
+    color: var(--text-color);
+}
+
+.modal-header {
+    padding: 15px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--primary-color);
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.modal-header h5 { margin: 0; font-size: 1.4rem; }
+
+.modal .modal-content {
+    padding-top: 25px;
+    background-color: var(--card-bg);
+}
+
+.modal .modal-footer {
+    background-color: var(--footer-bg);
+    border-top: 1px solid var(--border-color);
+}
+
+body.dark-theme .modal .modal-footer .btn-flat { color: #fff; }
+
+/* Correções de Inputs */
+body.dark-theme .input-field input, 
+body.dark-theme .input-field textarea {
+    color: white;
+    border-bottom: 1px solid #555;
+}
+body.dark-theme .input-field label { color: #9e9e9e; }
+body.dark-theme .input-field .prefix { color: #9e9e9e; }
+
+/* =========================================
+   5. FOOTER FIXO
+   ========================================= */
+.status-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 32px;
+    background-color: var(--primary-color);
+    color: white;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    font-size: 0.8rem;
+    z-index: 2000;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+}
+
+body.dark-theme .status-bar {
+    background-color: #0d0d0d; 
+    border-top: 1px solid #333;
+    color: #aaa;
+}
+
+.status-item { margin-right: 25px; display: flex; align-items: center; gap: 6px; }
+
+@keyframes pulse-text {
+    0% { color: inherit; }
+    50% { color: var(--accent-color); transform: scale(1.1); }
+    100% { color: inherit; }
+}
+.pulse-effect { animation: pulse-text 0.5s ease; }

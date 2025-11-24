@@ -1,0 +1,64 @@
+<div class="modal-content-wrapper">
+    <h5><i class="material-icons left">tune</i>Configurações de Conta</h5>
+
+    <div class="card-panel grey lighten-5 z-depth-0 border-left-pizza">
+        <div class="row valign-wrapper" style="margin-bottom:0;">
+            <div class="col s2 center"><i class="material-icons medium grey-text">account_circle</i></div>
+            <div class="col s10">
+                <h6 style="margin:0; font-weight:bold;" id="pref-username">Carregando...</h6>
+                <span class="badge red white-text left" style="margin-left:0; margin-top:5px;" id="pref-role">...</span>
+            </div>
+        </div>
+        <div class="row" style="margin-top:10px; margin-bottom:0;">
+             <div class="col s12 right-align">
+                 <button class="btn-flat red-text waves-effect" onclick="window.logout()">
+                     <i class="material-icons left">exit_to_app</i>Sair da Conta
+                 </button>
+             </div>
+        </div>
+    </div>
+
+    <div id="admin-user-manager" style="display:none; margin-top: 30px; border-top: 1px solid #ddd; padding-top: 20px;">
+        <h5><i class="material-icons left">supervisor_account</i>Gerenciar Equipe</h5>
+        <p class="grey-text">Adicione ou remova acesso ao sistema.</p>
+
+        <table class="highlight responsive-table">
+            <thead>
+                <tr>
+                    <th>Usuário</th>
+                    <th>Cargo</th>
+                    <th class="right-align">Ações</th>
+                </tr>
+            </thead>
+            <tbody id="users-table-body">
+                </tbody>
+        </table>
+
+        <div class="card-panel z-depth-1" style="margin-top: 20px; background-color: var(--bg-color);">
+            <span class="card-title" id="form-title">Adicionar Novo Usuário</span>
+            <form id="user-form">
+                <div class="row" style="margin-bottom: 0;">
+                    <div class="input-field col s4">
+                        <input id="form-username" type="text" required>
+                        <label for="form-username">Login</label>
+                    </div>
+                    <div class="input-field col s4">
+                        <input id="form-password" type="password" required>
+                        <label for="form-password">Senha</label>
+                    </div>
+                    <div class="input-field col s4">
+                        <select id="form-role">
+                            <option value="user">Caixa (User)</option>
+                            <option value="admin">Gerente (Admin)</option>
+                        </select>
+                        <label>Cargo</label>
+                    </div>
+                </div>
+                <div class="row right-align" style="margin-bottom: 0;">
+                    <button type="button" class="btn-flat waves-effect" onclick="resetUserForm()">Limpar</button>
+                    <button type="submit" class="btn pizza-red waves-effect waves-light"><i class="material-icons left">save</i>Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

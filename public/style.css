@@ -1,0 +1,262 @@
+/* =========================================
+   1. VARIÁVEIS DE TEMA
+   ========================================= */
+:root {
+    --primary-color: #d32f2f; /* Vermelho Pizza Hut */
+    --primary-dark: #b71c1c;
+    --accent-color: #ffca28;
+    
+    --bg-color: #f8f9fa;
+    --card-bg: #ffffff;
+    --text-color: #2c3e50;
+    
+    --footer-bg: #eceff1;
+    --footer-text: #455a64;
+    --border-color: rgba(0, 0, 0, 0.08);
+
+    /* FONTES */
+    --font-main: 'Inter', sans-serif;
+    --font-brand: 'Montserrat', sans-serif;
+}
+
+body.dark-theme {
+    --bg-color: #121212;
+    --card-bg: #1e1e1e;
+    --text-color: #e0e0e0;
+    --footer-bg: #262626;
+    --footer-text: #ffffff;
+    --border-color: #333333;
+}
+
+/* =========================================
+   2. TIPOGRAFIA & BASE
+   ========================================= */
+body {
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    font-family: var(--font-main);
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+    transition: background-color 0.3s;
+    padding-bottom: 35px;
+}
+
+main { flex: 1 0 auto; }
+
+h1, h2, h3, h4, h5, h6, .card-title {
+    font-family: var(--font-brand);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.header-title {
+    margin-left: 0.5rem;
+    font-weight: 800;
+    font-size: 1.5rem;
+    color: var(--text-color);
+    border-left: 5px solid var(--primary-color);
+    padding-left: 15px;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* =========================================
+   3. NAVBAR & LOGO PROFISSIONAL (REFEITO)
+   ========================================= */
+.pizza-red { background-color: var(--primary-color) !important; }
+
+/* Novo Estilo Corporativo */
+.brand-corporate {
+    font-family: var(--font-brand);
+    display: flex !important;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.brand-corporate i {
+    margin-right: 12px;
+    font-size: 1.7rem;
+    opacity: 0.9;
+}
+
+.brand-name {
+    font-weight: 800; /* Peso forte para a marca principal */
+    font-size: 1.4rem;
+    letter-spacing: 0.5px;
+}
+
+.brand-separator {
+    margin: 0 10px;
+    font-weight: 300;
+    opacity: 0.6;
+    font-size: 1.4rem;
+}
+
+.brand-dept {
+    font-weight: 700; /* Peso ligeiramente menor ou igual para o departamento */
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+    opacity: 0.95;
+}
+
+
+/* Menus do Topo */
+.nav-item {
+    font-family: var(--font-main);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.dropdown-content { 
+    background-color: var(--card-bg); 
+    min-width: 200px; 
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border-radius: 0 0 8px 8px;
+}
+.dropdown-content li > a { 
+    color: var(--text-color); 
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+.dropdown-content li > a:hover {
+    background-color: rgba(0,0,0,0.03);
+    color: var(--primary-color);
+}
+
+/* =========================================
+   4. CARDS (TILES)
+   ========================================= */
+.container-fluid {
+    width: 96%;
+    max-width: 1600px;
+    margin: 0 auto;
+    padding-top: 25px;
+}
+
+.tile-card {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border-radius: 8px;
+    height: 100%;
+    cursor: pointer;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    transition: transform 0.2s, box-shadow 0.2s, border-color 0.3s;
+    position: relative;
+    overflow: hidden; 
+    z-index: 1; 
+}
+
+.card-desc {
+    font-size: 0.85rem;
+    color: #78909c;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+body.dark-theme .card-desc { color: #9e9e9e; }
+
+.card-title {
+    font-size: 1.1rem !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.card-title i { color: var(--primary-color); margin-right: 10px; }
+
+.status-indicator h5 { 
+    font-family: var(--font-main);
+    font-weight: 700; 
+    font-size: 1.8rem;
+    margin: 5px 0 0 0; 
+}
+
+.card-action {
+    border-top: 1px solid var(--border-color) !important;
+    background-color: rgba(0,0,0,0.01) !important;
+    padding: 15px 24px !important;
+}
+.card-action a {
+    color: var(--primary-color) !important;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+}
+
+/* Animação Pizza */
+@keyframes pizza-flow {
+    0% { background-position: 0 0, 15px 15px; }
+    100% { background-position: 30px 30px, 45px 45px; }
+}
+.tile-card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; z-index: -1; 
+    background-image: 
+        radial-gradient(circle, var(--primary-color) 15%, transparent 16%),
+        radial-gradient(circle, var(--accent-color) 15%, transparent 16%);
+    background-size: 30px 30px; background-position: 0 0, 15px 15px; 
+    opacity: 0.02; 
+    animation: pizza-flow 4s linear infinite;
+    transition: opacity 0.3s;
+}
+.tile-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    border-color: rgba(211, 47, 47, 0.2);
+}
+.tile-card:hover::before { opacity: 0.08; animation-duration: 2s; }
+
+/* =========================================
+   5. MODAL & INPUTS
+   ========================================= */
+.modal {
+    border-radius: 8px;
+    background-color: var(--card-bg);
+    color: var(--text-color);
+}
+.modal-header {
+    padding: 15px 24px;
+    background-color: var(--primary-color);
+    color: white;
+    position: sticky; top: 0; z-index: 10;
+}
+.modal-header h5 { margin: 0; font-size: 1.2rem; font-weight: 700; letter-spacing: 0.5px; }
+.modal-content { padding-top: 25px; background-color: var(--card-bg); }
+.modal-footer { background-color: var(--footer-bg); border-top: 1px solid var(--border-color); }
+
+body.dark-theme .input-field input, body.dark-theme .input-field textarea {
+    color: white; border-bottom: 1px solid #555;
+}
+body.dark-theme .input-field label, body.dark-theme .input-field .prefix { color: #9e9e9e; }
+
+/* =========================================
+   6. FOOTER (Barra de Status)
+   ========================================= */
+.status-bar {
+    position: fixed; bottom: 0; left: 0; width: 100%; height: 32px;
+    background-color: #263238;
+    color: #cfd8dc;
+    display: flex; align-items: center;
+    padding: 0 20px;
+    font-size: 0.75rem;
+    font-family: var(--font-main);
+    font-weight: 500;
+    z-index: 2000;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+    letter-spacing: 0.5px;
+}
+body.dark-theme .status-bar { background-color: #000000; border-top: 1px solid #333; }
+
+.status-item { margin-right: 25px; display: flex; align-items: center; gap: 6px; }
+.status-item strong { color: #ffffff; font-weight: 700; }
+#clock { font-feature-settings: "tnum"; font-variant-numeric: tabular-nums; letter-spacing: 1px; }
+
+@keyframes pulse-text {
+    0% { color: inherit; }
+    50% { color: var(--accent-color); transform: scale(1.05); }
+    100% { color: inherit; }
+}
+.pulse-effect { animation: pulse-text 0.5s ease; }

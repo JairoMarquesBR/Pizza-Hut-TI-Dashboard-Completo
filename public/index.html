@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pizza Hut TI | Dashboard</title>
+    
+    <script>
+        if (!sessionStorage.getItem('pizzaUserUI')) window.location.href = 'login.html';
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="navbar-fixed">
+        <nav class="nav-extended pizza-red">
+            <div class="nav-wrapper">
+                
+                <a href="#" class="brand-logo center brand-corporate">
+                    <i class="material-icons">local_pizza</i>
+                    <span class="brand-name">PIZZA HUT</span>
+                    <span class="brand-separator">|</span>
+                    <span class="brand-dept">TI</span>
+                </a>
+                
+                <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+                
+                <ul class="right">
+                    <li><a href="javascript:void(0)" onclick="toggleTheme()" title="Alternar Tema"><i class="material-icons" id="theme-icon">brightness_4</i></a></li>
+                </ul>
+
+                <ul id="nav-desktop" class="left hide-on-med-and-down">
+                    <li><a class="dropdown-trigger nav-item" href="#!" data-target="dropdown-perfil">PERFIL</a></li>
+                    <li><a class="dropdown-trigger nav-item" href="#!" data-target="dropdown-ferramentas">FERRAMENTAS</a></li>
+                    <li><a class="dropdown-trigger nav-item" href="#!" data-target="dropdown-ajuda">AJUDA</a></li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+
+    <ul id="dropdown-perfil" class="dropdown-content">
+        <li><a href="#!" class="action-trigger" data-title="Preferências" data-file="modal-preferences.html"><i class="material-icons">account_circle</i>Minha Conta</a></li>
+        <li><a href="#!" class="action-trigger" data-title="Preferências" data-file="modal-preferences.html"><i class="material-icons">settings</i>Preferências</a></li>
+        <li class="divider"></li>
+        <li><a href="javascript:void(0)" onclick="logout()"><i class="material-icons">exit_to_app</i>Sair</a></li>
+    </ul>
+    
+    <ul id="dropdown-ferramentas" class="dropdown-content">
+        <li><a href="#!" class="action-trigger" data-title="Acesso Remoto" data-file="modal-remote.html"><i class="material-icons">desktop_windows</i>Acesso Remoto</a></li>
+        <li><a href="#!" class="action-trigger" data-title="Contagem" data-file="modal-counter.html"><i class="material-icons">exposure</i>Contagem</a></li>
+        <li class="divider"></li>
+        <li class="admin-only"><a href="settings.html"><i class="material-icons">build</i>Configuração</a></li>
+    </ul>
+    
+    <ul id="dropdown-ajuda" class="dropdown-content">
+        <li><a href="#!" class="action-trigger" data-title="Suporte Técnico" data-file="modal-default.html"><i class="material-icons">help_outline</i>Suporte</a></li>
+    </ul>
+
+    <ul class="sidenav" id="mobile-demo">
+        <li><div class="user-view">
+            <div class="background pizza-red"></div>
+            <span class="white-text name" style="font-family: 'Montserrat', sans-serif; font-weight: 800; letter-spacing: 1px;">PIZZA HUT | TI</span>
+            <span class="white-text email">Mobile Access</span>
+        </div></li>
+        <li><a href="#!" class="action-trigger" data-title="Perfil" data-file="modal-preferences.html"><i class="material-icons">person</i>Perfil</a></li>
+        <li><a href="#!" class="action-trigger" data-title="Ferramentas" data-file="modal-default.html"><i class="material-icons">build</i>Ferramentas</a></li>
+        <li class="admin-only"><a href="settings.html"><i class="material-icons">settings</i>Configuração</a></li>
+        <li><a href="javascript:void(0)" onclick="logout()"><i class="material-icons">exit_to_app</i>Sair</a></li>
+    </ul>
+
+    <main>
+        <div class="container-fluid">
+            <h5 class="header-title">VISÃO GERAL</h5>
+            <div class="row" id="tiles-container">
+                
+                <div class="col s12 m6 l4 xl3">
+                    <div class="card hoverable tile-card action-trigger" data-title="Gerenciar Clientes" data-file="modal-clients.html">
+                        <div class="card-content">
+                            <span class="card-title"><i class="material-icons left">person_add</i>Novos Clientes</span>
+                            <p class="card-desc">Registros recentes.</p>
+                            <div class="status-indicator green-text">
+                                <h5><i class="material-icons tiny">trending_up</i> <span id="client-count">--</span></h5>
+                            </div>
+                        </div>
+                        <div class="card-action">
+                            <a href="#!">NOVO CADASTRO</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col s12 m6 l4 xl3">
+                    <div class="card hoverable tile-card action-trigger" data-title="Lista de Compras" data-file="modal-shopping.html">
+                        <div class="card-content">
+                            <span class="card-title"><i class="material-icons left">shopping_cart</i>Lista de Compras</span>
+                            <p class="card-desc">Insumos pendentes.</p>
+                            <div class="status-indicator orange-text">
+                                <h5>5 Itens Críticos</h5>
+                            </div>
+                        </div>
+                        <div class="card-action">
+                            <a href="#!">VER LISTA</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col s12 m6 l4 xl3">
+                    <div class="card hoverable tile-card action-trigger" data-title="Documentos" data-file="modal-docs.html">
+                        <div class="card-content">
+                            <span class="card-title"><i class="material-icons left">folder_shared</i>Documentos</span>
+                            <p class="card-desc">Backup e arquivos.</p>
+                            <div class="status-indicator blue-text">
+                                <h5>1.2 GB Usados</h5>
+                            </div>
+                        </div>
+                        <div class="card-action">
+                            <a href="#!">ARQUIVOS</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col s12 m6 l4 xl3">
+                    <div class="card hoverable tile-card action-trigger" data-title="Diagnóstico" data-file="modal-default.html">
+                        <div class="card-content">
+                            <span class="card-title"><i class="material-icons left">dns</i>Infraestrutura</span>
+                            <p class="card-desc">Status do servidor.</p>
+                            <div class="status-indicator green-text"><h5>Online</h5></div>
+                        </div>
+                        <div class="card-action">
+                            <a href="#!">DIAGNÓSTICO</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <div id="main-modal" class="modal modal-fixed-footer">
+        <div class="modal-header pizza-red white-text">
+            <h5 id="modal-title">Carregando...</h5>
+        </div>
+        <div class="modal-content" id="modal-body-placeholder">
+            <div class="center-align" style="margin-top: 50px;">
+                <div class="preloader-wrapper active">
+                    <div class="spinner-layer spinner-red-only">
+                        <div class="circle-clipper left"><div class="circle"></div></div>
+                        <div class="gap-patch"><div class="circle"></div></div>
+                        <div class="circle-clipper right"><div class="circle"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" class="modal-close waves-effect waves-red btn-flat">Fechar</a>
+        </div>
+    </div>
+
+    <footer class="status-bar">
+        <div class="status-item">
+            <i class="material-icons tiny">network_check</i> Ping: <strong id="real-ping">...</strong>
+        </div>
+        <div class="status-item hide-on-small-only">
+            <i class="material-icons tiny">public</i> IP: <span id="real-ip">Carregando...</span>
+        </div>
+        <div class="status-item hide-on-small-only">
+            <i class="material-icons tiny">domain</i> <span id="real-isp">...</span>
+        </div>
+        <div class="status-item" style="margin-left: auto;">
+            <span id="clock">--:--:--</span>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

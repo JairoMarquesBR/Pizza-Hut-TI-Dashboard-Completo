@@ -1,0 +1,35 @@
+<div class="modal-content-wrapper center-align">
+    <h5><i class="material-icons left">timer</i>Contador Rápido</h5>
+    <p>Utilize para contagem de estoque físico ou fluxo de pessoas.</p>
+    
+    <div class="card-panel grey lighten-4 z-depth-0" style="margin: 30px 0;">
+        <h1 id="display-counter" style="font-size: 6rem; margin: 0; font-weight: bold; color: var(--primary-color);">0</h1>
+        <p class="grey-text">Contagem Atual</p>
+    </div>
+
+    <div class="row">
+        <div class="col s4">
+            <a class="btn-floating btn-large waves-effect waves-light grey" onclick="document.getElementById('display-counter').innerText = Math.max(0, parseInt(document.getElementById('display-counter').innerText) - 1)">
+                <i class="material-icons">remove</i>
+            </a>
+        </div>
+        <div class="col s4">
+            <a class="btn-flat waves-effect waves-red" onclick="document.getElementById('display-counter').innerText = '0'">
+                Zerar
+            </a>
+        </div>
+        <div class="col s4">
+            <a class="btn-floating btn-large waves-effect waves-light pizza-red" onclick="document.getElementById('display-counter').innerText = parseInt(document.getElementById('display-counter').innerText) + 1">
+                <i class="material-icons">add</i>
+            </a>
+        </div>
+    </div>
+
+    <div class="row left-align">
+        <div class="input-field col s12">
+            <i class="material-icons prefix">label</i>
+            <input id="count_label" type="text">
+            <label for="count_label">Rótulo da Contagem (Ex: Caixas de Pizza)</label>
+        </div>
+    </div>
+</div>

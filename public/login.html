@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - PizzaNet</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body.login-body {
+            background: linear-gradient(rgba(211, 47, 47, 0.8), rgba(255, 171, 0, 0.6)), url('https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh; /* Garante tela cheia */
+        }
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 15px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        body.dark-theme .login-card {
+            background: rgba(30, 30, 30, 0.95);
+        }
+        .login-logo i { font-size: 3rem; color: var(--primary-color); }
+        .login-logo h4 { margin: 10px 0 30px; font-weight: 300; color: var(--text-color); }
+    </style>
+</head>
+<body class="login-body">
+
+    <div class="login-card">
+        <div class="login-logo">
+            <i class="material-icons">local_pizza</i>
+            <h4>PizzaNet</h4>
+        </div>
+        
+        <form id="login-form">
+            <div class="input-field">
+                <i class="material-icons prefix">person</i>
+                <input id="username" type="text" required>
+                <label for="username">Usuário</label>
+            </div>
+            <div class="input-field">
+                <i class="material-icons prefix">lock</i>
+                <input id="password" type="password" required>
+                <label for="password">Senha</label>
+            </div>
+            <br>
+            <button type="submit" class="btn-large waves-effect waves-light pizza-red" style="width: 100%; border-radius: 30px;">
+                Entrar no Sistema
+            </button>
+        </form>
+        
+        <p class="red-text" id="login-error" style="display:none; margin-top: 15px; font-weight: bold;">
+            </p>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    
+    <script>
+        // Lógica de Login via API (Node.js)
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value.toLowerCase();
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('login-error');
+            
+            errorMsg.style.display = 'none';
+
+            try {
+                // Envia dados para o servidor
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Login Sucesso: O Cookie HttpOnly já foi salvo pelo navegador automaticamente.
+                    // Salvamos no SessionStorage apenas dados visuais (Nome/Role) para a UI.
+                    sessionStorage.setItem('pizzaUserUI', JSON.stringify(data.user)); 
+                    
+                    // Redireciona para o painel
+                    window.location.href = '/index.html';
+                } else {
+                    // Erro de Login
+                    errorMsg.style.display = 'block';
+                    errorMsg.innerText = data.message || 'Erro de autenticação';
+                    errorMsg.classList.add('pulse-effect');
+                }
+            } catch (error) {
+                console.error('Erro de conexão', error);
+                errorMsg.style.display = 'block';
+                errorMsg.innerText = 'Servidor indisponível.';
+            }
+        });
+
+        // Limpa dados de UI antigos ao entrar na tela de login
+        sessionStorage.clear();
+    </script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<div class="container-fluid p-3">
+    
+    <div class="card border-0 bg-pizza-red text-white mb-4 rounded-3 shadow-sm" style="background: linear-gradient(135deg, var(--pizza-red), #b71c1c);">
+        <div class="card-body d-flex align-items-center p-4">
+            <div class="me-3 position-relative">
+                <img id="hero-avatar-img" src="" class="rounded-circle border border-2 border-white" width="60" height="60" style="display:none; object-fit: cover;">
+                <i id="hero-avatar-icon" class="material-icons" style="font-size: 60px;">account_circle</i>
+            </div>
+            <div>
+                <small class="text-white-50 text-uppercase fw-bold ls-1" style="font-size: 0.7rem;">Perfil</small>
+                <h3 class="fw-bold mb-0" id="pref-username">...</h3>
+                <span class="badge bg-white text-danger mt-2 rounded-pill px-3" id="pref-role">...</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4 shadow-sm border-0">
+        <div class="card-body py-2">
+            <div class="d-flex justify-content-between align-items-center py-2">
+                <div class="d-flex align-items-center">
+                    <div class="icon-box bg-body-tertiary rounded-circle me-3" style="width: 40px; height: 40px; color: var(--bs-body-color);">
+                        <i class="material-icons">dark_mode</i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-bold">Modo Escuro</h6>
+                        <small class="text-muted">Aparência noturna</small>
+                    </div>
+                </div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="pref-theme" style="width: 3em; height: 1.5em; cursor: pointer;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="admin-user-manager" class="d-none">
+        <h6 class="text-danger fw-bold border-bottom pb-2 mb-3">ADMINISTRAÇÃO</h6>
+        
+        <div class="card bg-body-tertiary border-0 mb-3 rounded-3">
+            <div class="card-body">
+                <h6 class="fw-bold mb-3 d-flex align-items-center"><i class="material-icons me-2 text-danger">person_add</i> Novo Usuário</h6>
+                <form id="user-form" class="row g-2">
+                    <div class="col-12 d-flex align-items-center mb-2">
+                        <div class="me-3">
+                            <img id="form-avatar-preview" src="" class="rounded-circle shadow-sm bg-white" width="50" height="50" style="display:none; object-fit:cover;">
+                            <i id="form-avatar-icon" class="material-icons text-secondary" style="font-size: 50px;">add_a_photo</i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <input class="form-control form-control-sm" type="file" id="form-file" accept="image/*">
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <input type="text" class="form-control" id="form-username" placeholder="Login" required>
+                    </div>
+                    <div class="col-md-4">
+                        <input type="password" class="form-control" id="form-password" placeholder="Senha">
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-select" id="form-role">
+                            <option value="user">Caixa</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                    <div class="col-12 text-end mt-2">
+                        <button type="button" class="btn btn-sm btn-link text-muted text-decoration-none me-2" onclick="resetUserForm()">Limpar</button>
+                        <button type="submit" class="btn btn-sm btn-pizza-red px-4 rounded-pill shadow-sm">Salvar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-3">Foto</th>
+                            <th>Login</th>
+                            <th>Cargo</th>
+                            <th class="text-end pe-3">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

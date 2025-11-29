@@ -1,112 +1,76 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - PizzaNet</title>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <link rel="stylesheet" href="style.css">
+    <title>Login | Pizza Hut TI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body.login-body {
-            background: linear-gradient(rgba(211, 47, 47, 0.8), rgba(255, 171, 0, 0.6)), url('https://images.unsplash.com/photo-1513104890138-7c749659a591?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100vh; /* Garante tela cheia */
+        body {
+            background: linear-gradient(135deg, #b71c1c 0%, #d32f2f 100%);
+            font-family: 'Inter', sans-serif;
+            height: 100vh;
+            display: flex; align-items: center; justify-content: center;
         }
         .login-card {
             background: rgba(255, 255, 255, 0.95);
-            padding: 40px;
-            border-radius: 15px;
-            width: 100%;
-            max-width: 400px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-            text-align: center;
+            backdrop-filter: blur(10px);
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            width: 100%; max-width: 400px;
+            padding: 2rem;
         }
-        body.dark-theme .login-card {
-            background: rgba(30, 30, 30, 0.95);
-        }
-        .login-logo i { font-size: 3rem; color: var(--primary-color); }
-        .login-logo h4 { margin: 10px 0 30px; font-weight: 300; color: var(--text-color); }
+        [data-bs-theme="dark"] .login-card { background: rgba(30, 30, 30, 0.95); color: white; }
     </style>
 </head>
-<body class="login-body">
-
+<body>
     <div class="login-card">
-        <div class="login-logo">
-            <i class="material-icons">local_pizza</i>
-            <h4>PizzaNet</h4>
+        <div class="text-center mb-4">
+            <h2 class="fw-bold text-danger mb-1">PIZZA HUT</h2>
+            <small class="text-muted text-uppercase fw-bold ls-1">Acesso Administrativo</small>
         </div>
-        
         <form id="login-form">
-            <div class="input-field">
-                <i class="material-icons prefix">person</i>
-                <input id="username" type="text" required>
-                <label for="username">Usuário</label>
+            <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="username" placeholder="Usuário" required>
+                <label for="username" class="text-secondary">Usuário</label>
             </div>
-            <div class="input-field">
-                <i class="material-icons prefix">lock</i>
-                <input id="password" type="password" required>
-                <label for="password">Senha</label>
+            <div class="form-floating mb-4">
+                <input type="password" class="form-control" id="password" placeholder="Senha" required>
+                <label for="password" class="text-secondary">Senha</label>
             </div>
-            <br>
-            <button type="submit" class="btn-large waves-effect waves-light pizza-red" style="width: 100%; border-radius: 30px;">
-                Entrar no Sistema
-            </button>
+            <button type="submit" class="btn btn-danger w-100 py-2 fw-bold rounded-pill shadow-sm">ENTRAR</button>
+            <div id="login-error" class="alert alert-danger mt-3 py-2 text-center small d-none"></div>
         </form>
-        
-        <p class="red-text" id="login-error" style="display:none; margin-top: 15px; font-weight: bold;">
-            </p>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    
     <script>
-        // Lógica de Login via API (Node.js)
         document.getElementById('login-form').addEventListener('submit', async function(e) {
             e.preventDefault();
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+            const err = document.getElementById('login-error');
             
-            const username = document.getElementById('username').value.toLowerCase();
-            const password = document.getElementById('password').value;
-            const errorMsg = document.getElementById('login-error');
-            
-            errorMsg.style.display = 'none';
-
             try {
-                // Envia dados para o servidor
-                const response = await fetch('/api/login', {
+                const res = await fetch('/api/login', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({username: u, password: p})
                 });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    // Login Sucesso: O Cookie HttpOnly já foi salvo pelo navegador automaticamente.
-                    // Salvamos no SessionStorage apenas dados visuais (Nome/Role) para a UI.
-                    sessionStorage.setItem('pizzaUserUI', JSON.stringify(data.user)); 
-                    
-                    // Redireciona para o painel
+                const data = await res.json();
+                
+                if (res.ok) {
+                    sessionStorage.setItem('pizzaUserUI', JSON.stringify(data.user));
                     window.location.href = '/index.html';
                 } else {
-                    // Erro de Login
-                    errorMsg.style.display = 'block';
-                    errorMsg.innerText = data.message || 'Erro de autenticação';
-                    errorMsg.classList.add('pulse-effect');
+                    err.innerText = data.message;
+                    err.classList.remove('d-none');
                 }
-            } catch (error) {
-                console.error('Erro de conexão', error);
-                errorMsg.style.display = 'block';
-                errorMsg.innerText = 'Servidor indisponível.';
+            } catch (e) {
+                err.innerText = "Erro de conexão";
+                err.classList.remove('d-none');
             }
         });
-
-        // Limpa dados de UI antigos ao entrar na tela de login
-        sessionStorage.clear();
     </script>
 </body>
 </html>

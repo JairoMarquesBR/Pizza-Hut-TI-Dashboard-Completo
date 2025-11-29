@@ -1,160 +1,116 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-br" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pizza Hut TI | Dashboard</title>
-    
+    <title>Pizza Hut TI | Manager</title>
     <script>
         if (!sessionStorage.getItem('pizzaUserUI')) window.location.href = 'login.html';
     </script>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="" id="page-style">
 </head>
-<body>
+<body class="bg-body-tertiary">
 
-    <div id="custom-context-menu" class="context-menu">
-        <ul>
-            <li onclick="location.reload()"><i class="material-icons">refresh</i> Atualizar</li>
-            <li onclick="toggleTheme()"><i class="material-icons">brightness_4</i> Tema</li>
-            <li class="divider"></li>
-            <li onclick="logout()" class="red-text"><i class="material-icons">exit_to_app</i> Sair</li>
-        </ul>
-    </div>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-pizza-red fixed-top shadow-sm" style="height: 70px;">
+        <div class="container-fluid px-4">
+            <button class="btn btn-link text-white d-lg-none me-3 p-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
+                <i class="material-icons" style="font-size: 28px;">menu</i>
+            </button>
 
-    <div class="navbar-fixed">
-        <nav class="modern-nav">
-            <div class="nav-wrapper">
-                <a href="#" data-target="mobile-demo" class="sidenav-trigger"><i class="material-icons">menu</i></a>
+            <a class="navbar-brand d-flex align-items-center brand-corporate mx-auto position-absolute start-50 translate-middle-x" href="#" onclick="loadPage('dashboard')">
+                <i class="material-icons text-white me-2" style="font-size: 28px;">local_pizza</i>
+                <div class="d-flex align-items-center text-white brand-font" style="line-height: 1;">
+                    <span class="fw-bold fs-4">PIZZA HUT</span><span class="mx-2 opacity-50 fw-light fs-4">|</span><span class="fw-bold fs-4 opacity-75">TI</span>
+                </div>
+            </a>
 
-                <a href="#" class="brand-logo center brand-corporate">
-                    <i class="material-icons">local_pizza</i>
-                    <span class="brand-name">PIZZA HUT</span>
-                    <span class="brand-separator">|</span>
-                    <span class="brand-dept">TI</span>
-                </a>
-                
-                <ul class="right">
-                    <li><a href="javascript:void(0)" onclick="toggleTheme()" class="icon-btn"><i class="material-icons" id="theme-icon">brightness_4</i></a></li>
-                </ul>
-
-                <ul id="nav-desktop" class="left hide-on-med-and-down">
-                    <li><a class="dropdown-trigger nav-item user-profile-trigger" href="#!" data-target="dropdown-perfil">
-                        <img id="nav-user-avatar" src="" class="nav-avatar" style="display:none;">
-                        <i id="nav-user-icon" class="material-icons left">account_circle</i>
-                        PERFIL
-                    </a></li>
-                    <li><a class="dropdown-trigger nav-item" href="#!" data-target="dropdown-ferramentas">FERRAMENTAS</a></li>
-                    <li><a class="dropdown-trigger nav-item" href="#!" data-target="dropdown-ajuda">AJUDA</a></li>
+            <div class="collapse navbar-collapse d-none d-lg-block">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item"><a class="nav-link text-white fw-medium px-3 ls-1" href="#" onclick="loadPage('dashboard')">VISÃO GERAL</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-white fw-medium px-3 ls-1" href="#" role="button" data-bs-toggle="dropdown">FERRAMENTAS</a>
+                        <ul class="dropdown-menu shadow border-0 mt-2 rounded-3">
+                            <li><a class="dropdown-item py-2" href="#" onclick="loadPage('remote')"><i class="material-icons align-middle me-2 fs-6">desktop_windows</i> Acesso Remoto</a></li>
+                            <li><a class="dropdown-item py-2 action-trigger" href="#" data-title="Contagem" data-file="pages/modal-counter.html"><i class="material-icons align-middle me-2 fs-6">exposure</i> Contagem</a></li>
+                            <li class="admin-only"><hr class="dropdown-divider"></li>
+                            <li class="admin-only"><a class="dropdown-item py-2 text-danger" href="settings.html"><i class="material-icons align-middle me-2 fs-6">settings</i> Configuração</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
-        </nav>
-    </div>
 
-    <ul id="dropdown-perfil" class="dropdown-content">
-        <li><a href="#!" class="action-trigger" data-title="Preferências" data-file="modal-preferences.html"><i class="material-icons">settings</i>Configurações</a></li>
-        <li class="divider"></li>
-        <li><a href="javascript:void(0)" onclick="logout()"><i class="material-icons">exit_to_app</i>Sair</a></li>
-    </ul>
-    <ul id="dropdown-ferramentas" class="dropdown-content">
-        <li><a href="#!" class="action-trigger" data-title="Acesso Remoto" data-file="modal-remote.html"><i class="material-icons">desktop_windows</i>Acesso Remoto</a></li>
-        <li><a href="#!" class="action-trigger" data-title="Contagem" data-file="modal-counter.html"><i class="material-icons">exposure</i>Contagem</a></li>
-        <li class="divider"></li>
-        <li class="admin-only"><a href="settings.html"><i class="material-icons">build</i>Configuração</a></li>
-    </ul>
-    <ul id="dropdown-ajuda" class="dropdown-content">
-        <li><a href="#!" class="action-trigger" data-title="Suporte Técnico" data-file="modal-default.html"><i class="material-icons">help_outline</i>Suporte</a></li>
-    </ul>
+            <div class="d-flex align-items-center gap-3 ms-auto">
+                <button class="btn btn-link text-white p-0 d-flex align-items-center" onclick="toggleTheme()"><i class="material-icons" id="theme-icon">dark_mode</i></button>
 
-    <ul class="sidenav" id="mobile-demo">
-        <li><div class="user-view">
-            <div class="background pizza-red-bg"></div>
-            <a href="#user"><img id="mobile-user-avatar" class="circle" src=""></a>
-            <span class="white-text name" style="font-weight: 800;">PIZZA HUT | TI</span>
-            <span class="white-text email" id="mobile-username">...</span>
-        </div></li>
-        <li><a href="#!" class="action-trigger" data-title="Perfil" data-file="modal-preferences.html"><i class="material-icons">person</i>Perfil</a></li>
-        <li><div class="divider"></div></li>
-        <li><a href="#!" class="action-trigger" data-title="Acesso Remoto" data-file="modal-remote.html"><i class="material-icons">desktop_windows</i>Acesso Remoto</a></li>
-        <li class="admin-only"><a href="settings.html"><i class="material-icons">settings</i>Admin Config</a></li>
-        <li><div class="divider"></div></li>
-        <li><a href="javascript:void(0)" onclick="logout()"><i class="material-icons">exit_to_app</i>Sair</a></li>
-    </ul>
-
-    <main>
-        <div class="container-fluid">
-            <h5 class="header-title">VISÃO GERAL</h5>
-            <div class="row" id="tiles-container">
-                <div class="col s12 m6 l4 xl3">
-                    <div class="card hoverable tile-card action-trigger" data-title="Gerenciar Clientes" data-file="modal-clients.html">
-                        <div class="card-content"><span class="card-title"><i class="material-icons left">person_add</i>Clientes</span><h5 class="green-text" id="client-count">--</h5></div>
-                    </div>
-                </div>
-                <div class="col s12 m6 l4 xl3">
-                    <div class="card hoverable tile-card action-trigger" data-title="Lista de Compras" data-file="modal-shopping.html">
-                        <div class="card-content"><span class="card-title"><i class="material-icons left">shopping_cart</i>Compras</span><h5 class="orange-text">5 Itens</h5></div>
-                    </div>
-                </div>
-                <div class="col s12 m6 l4 xl3">
-                    <div class="card hoverable tile-card action-trigger" data-title="Documentos" data-file="modal-docs.html">
-                        <div class="card-content"><span class="card-title"><i class="material-icons left">folder</i>Arquivos</span><h5 class="blue-text">1.2 GB</h5></div>
-                    </div>
-                </div>
-                <div class="col s12 m6 l4 xl3">
-                    <div class="card hoverable tile-card action-trigger" data-title="Diagnóstico" data-file="modal-default.html">
-                        <div class="card-content"><span class="card-title"><i class="material-icons left">dns</i>Status</span><h5 class="green-text">Online</h5></div>
-                    </div>
+                <div class="dropdown">
+                    <a href="#" class="d-flex align-items-center text-decoration-none" data-bs-toggle="dropdown">
+                        <img id="nav-user-avatar" src="" class="rounded-circle border border-2 border-white/50" width="40" height="40" style="display:none; object-fit: cover;">
+                        <i id="nav-user-icon" class="material-icons text-white" style="font-size: 32px;">account_circle</i>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-3 rounded-3 p-2" style="min-width: 200px;">
+                        <li class="px-3 py-2 border-bottom mb-2">
+                            <span class="d-block fw-bold text-dark" id="nav-username-display">...</span>
+                            <small class="text-muted text-uppercase" style="font-size: 0.7rem;" id="nav-role-display">...</small>
+                        </li>
+                        
+                        <li><a class="dropdown-item rounded-2 py-2 action-trigger" href="#" data-title="Minha Conta" data-file="pages/modal-preferences.html"><i class="material-icons align-middle me-2 fs-6">person</i> Minha Conta</a></li>
+                        <li><a class="dropdown-item rounded-2 py-2 action-trigger" href="#" data-title="Preferências" data-file="pages/modal-preferences.html"><i class="material-icons align-middle me-2 fs-6">tune</i> Preferências</a></li>
+                        
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item rounded-2 py-2 text-danger fw-medium" href="javascript:void(0)" onclick="logout()"><i class="material-icons align-middle me-2 fs-6">logout</i> Sair</a></li>
+                    </ul>
                 </div>
             </div>
         </div>
-    </main>
+    </nav>
 
-    <div id="main-modal" class="modal modal-fixed-footer">
-        <div class="modal-header pizza-red white-text">
-            <h5 id="modal-title">Carregando...</h5>
+    <div class="offcanvas offcanvas-start bg-pizza-red text-white border-0" tabindex="-1" id="mobileMenu">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title fw-bold brand-font">PIZZA HUT | TI</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
         </div>
-        <div class="modal-content" id="modal-body-placeholder">
-            <div class="center-align" style="margin-top: 50px;"><div class="preloader-wrapper active"><div class="spinner-layer spinner-red-only"><div class="circle-clipper left"><div class="circle"></div></div></div></div></div>
-        </div>
-        <div class="modal-footer">
-            <a href="#!" class="modal-close waves-effect waves-red btn-flat">Fechar</a>
+        <div class="offcanvas-body pt-0">
+            <a href="#" class="btn btn-link text-white text-decoration-none text-start action-trigger" data-title="Perfil" data-file="pages/modal-preferences.html"><i class="material-icons align-middle me-2">person</i> Perfil</a>
+            <a href="#" class="btn btn-link text-white text-decoration-none text-start" onclick="loadPage('remote')"><i class="material-icons align-middle me-2">desktop_windows</i> Acesso Remoto</a>
+            <a href="settings.html" class="btn btn-link text-white text-decoration-none text-start admin-only"><i class="material-icons align-middle me-2">settings</i> Configuração</a>
+            <hr class="border-white opacity-25">
+            <a href="javascript:void(0)" onclick="logout()" class="btn btn-link text-white text-decoration-none text-start"><i class="material-icons align-middle me-2">logout</i> Sair</a>
         </div>
     </div>
 
-    <footer class="status-bar">
-        
-        <div class="status-item">
-            <i class="material-icons tiny" id="net-icon">wifi</i>
-            <span id="net-status">Verificando...</span>
-        </div>
+    <main id="app-content" class="container-fluid py-4" style="margin-top: 75px; margin-bottom: 50px;"></main>
 
-        <div class="status-item hide-on-small-only">
-            <i class="material-icons tiny">speed</i> <span id="net-ping">-- ms</span>
+    <div class="modal fade" id="main-modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+            <div class="modal-content border-0 shadow-lg">
+                <div class="modal-header text-white" style="background-color: var(--pizza-red);">
+                    <h5 class="modal-title fw-bold" id="modal-title">...</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0" id="modal-body-placeholder"></div>
+                <div class="modal-footer bg-body-tertiary py-2">
+                    <button type="button" class="btn btn-outline-secondary btn-sm px-4 rounded-pill" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
         </div>
+    </div>
 
-        <div class="status-item hide-on-small-only">
-            <i class="material-icons tiny">public</i> IP: <span id="net-ip">...</span>
-        </div>
-
-        <div class="status-item hide-on-med-and-down">
-            <i class="material-icons tiny">dns</i> <span id="net-isp">...</span>
-        </div>
-
-        <div class="status-item hide-on-med-and-down">
-            <i class="material-icons tiny">computer</i> <span id="net-os">...</span>
-        </div>
-
-        <div class="status-item" style="margin-left: auto;">
-            <span id="clock" style="font-family: monospace; font-weight: bold;">--:--:--</span>
+    <footer class="fixed-bottom bg-dark text-white-50 py-1 shadow border-top border-secondary">
+        <div class="container-fluid d-flex justify-content-between align-items-center h-100 font-monospace" style="font-size: 0.75rem;">
+            <div class="d-flex align-items-center gap-3">
+                <span id="conn-status" class="fw-bold text-success">Online</span>
+                <span class="d-none d-sm-inline opacity-75 border-start border-secondary ps-3">Ping: <span id="real-ping" class="fw-bold text-white">...</span></span>
+                <span class="d-none d-md-inline opacity-75 border-start border-secondary ps-3">IP: <span id="real-ip">...</span></span>
+            </div>
+            <div class="fw-bold font-monospace ls-1 text-white" id="clock">--:--:--</div>
         </div>
     </footer>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-    <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>

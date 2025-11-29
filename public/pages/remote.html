@@ -1,0 +1,43 @@
+<div class="container-fluid fade-in">
+    
+    <div class="row valign-wrapper" style="margin-bottom: 20px;">
+        <div class="col s12 m8">
+            <h5 class="header-title" style="margin-bottom: 5px;">ACESSO REMOTO</h5>
+            <span class="grey-text">Gerenciamento de terminais e PDVs da rede interna.</span>
+        </div>
+        <div class="col s12 m4 right-align">
+            <button class="btn pizza-red waves-effect waves-light shadow-effect" onclick="scanNetwork()">
+                <i class="material-icons left">refresh</i> Escanear Rede
+            </button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col s12">
+            <div class="card admin-card">
+                <div class="admin-body p-0" style="padding: 0;">
+                    <table class="highlight modern-table responsive-table">
+                        <thead>
+                            <tr>
+                                <th style="padding-left: 20px;">Status</th>
+                                <th>Nome do Host</th>
+                                <th>IP Local</th>
+                                <th>Sistema</th>
+                                <th class="center-align">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody id="remote-list">
+                            <tr>
+                                <td colspan="5" class="center-align" style="padding: 40px; color: #9e9e9e;">
+                                    <i class="material-icons medium" style="opacity: 0.3;">radar</i>
+                                    <p>Clique em "Escanear Rede" para buscar dispositivos.</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

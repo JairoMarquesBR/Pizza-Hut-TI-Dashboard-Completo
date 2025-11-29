@@ -1,0 +1,66 @@
+<div class="fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold text-secondary ls-1">VISÃO GERAL</h4>
+        <span class="badge bg-success rounded-pill">Sistema Online</span>
+    </div>
+    
+    <div class="row g-4">
+        
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card h-100 shadow-sm border-0 tile-card action-trigger" data-title="Gerenciar Clientes" data-file="modal-clients.html">
+                <div class="card-body d-flex align-items-center">
+                    <div class="icon-box bg-soft-success me-3">
+                        <i class="material-icons text-success">person_add</i>
+                    </div>
+                    <div>
+                        <h6 class="card-subtitle text-muted mb-1 text-uppercase" style="font-size: 0.75rem;">Novos Clientes</h6>
+                        <h3 class="card-title mb-0 fw-bold text-dark" id="dash-clients">--</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card h-100 shadow-sm border-0 tile-card action-trigger" data-title="Lista de Compras" data-file="modal-shopping.html">
+                <div class="card-body d-flex align-items-center">
+                    <div class="icon-box bg-soft-warning me-3">
+                        <i class="material-icons text-warning">shopping_cart</i>
+                    </div>
+                    <div>
+                        <h6 class="card-subtitle text-muted mb-1 text-uppercase" style="font-size: 0.75rem;">Compras</h6>
+                        <h3 class="card-title mb-0 fw-bold text-dark">5 <small class="fs-6 text-muted">Itens</small></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card h-100 shadow-sm border-0 tile-card action-trigger" data-title="Documentos" data-file="modal-docs.html">
+                <div class="card-body d-flex align-items-center">
+                    <div class="icon-box bg-soft-primary me-3">
+                        <i class="material-icons text-primary">folder</i>
+                    </div>
+                    <div>
+                        <h6 class="card-subtitle text-muted mb-1 text-uppercase" style="font-size: 0.75rem;">Arquivos</h6>
+                        <h3 class="card-title mb-0 fw-bold text-dark">1.2 <small class="fs-6 text-muted">GB</small></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card h-100 shadow-sm border-0 tile-card" onclick="loadPage('remote')">
+                <div class="card-body d-flex align-items-center">
+                    <div class="icon-box bg-secondary bg-opacity-10 me-3">
+                        <i class="material-icons text-secondary">desktop_windows</i>
+                    </div>
+                    <div>
+                        <h6 class="card-subtitle text-muted mb-1 text-uppercase" style="font-size: 0.75rem;">Acesso Remoto</h6>
+                        <h3 class="card-title mb-0 fw-bold text-success fs-4">ATIVO</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

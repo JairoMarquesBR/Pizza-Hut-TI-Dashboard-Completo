@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurações | Pizza Hut TI</title>
+    
+    <script>
+        // Verifica sessão
+        const user = sessionStorage.getItem('pizzaUserUI');
+        if (!user) window.location.href = 'login.html';
+        // Verifica se é Admin (Segurança de UI)
+        if (JSON.parse(user).role !== 'admin') window.location.href = 'index.html';
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body class="bg-body-tertiary">
+
+    <nav class="navbar navbar-dark bg-pizza-red shadow-sm fixed-top" style="height: 70px;">
+        <div class="container-fluid px-4">
+            <div class="d-flex align-items-center">
+                <a href="index.html" class="btn btn-link text-white p-0 me-3">
+                    <i class="material-icons" style="font-size: 28px;">arrow_back</i>
+                </a>
+                <span class="navbar-brand brand-font fw-bold fs-4">Configurações do Sistema</span>
+            </div>
+            
+            <div class="d-flex align-items-center gap-3">
+                <button class="btn btn-link text-white p-0 d-flex align-items-center" onclick="toggleTheme()">
+                    <i class="material-icons" id="theme-icon">dark_mode</i>
+                </button>
+                <div class="vr bg-white opacity-50"></div>
+                <div class="d-flex align-items-center text-white">
+                    <i class="material-icons me-2">verified_user</i>
+                    <span class="fw-bold d-none d-md-block">Área Administrativa</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container py-5" style="margin-top: 70px;">
+        <div class="row g-4">
+            
+            <div class="col-md-4 col-lg-3">
+                <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+                    <div class="list-group list-group-flush">
+                        <a href="#" class="list-group-item list-group-item-action active bg-pizza-red border-0 py-3 fw-bold">
+                            <i class="material-icons align-middle me-2 fs-6">tune</i> Geral
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action py-3" onclick="alert('Use o menu Perfil > Preferências para gerenciar usuários.')">
+                            <i class="material-icons align-middle me-2 fs-6">people</i> Usuários
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action py-3">
+                            <i class="material-icons align-middle me-2 fs-6">security</i> Segurança
+                        </a>
+                        <a href="#" class="list-group-item list-group-item-action py-3">
+                            <i class="material-icons align-middle me-2 fs-6">history</i> Logs de Acesso
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="card border-0 shadow-sm rounded-3 mt-4 bg-body">
+                    <div class="card-body">
+                        <small class="text-uppercase text-muted fw-bold ls-1" style="font-size: 0.7rem;">Status do Servidor</small>
+                        <div class="d-flex align-items-center mt-2 text-success">
+                            <i class="material-icons me-2">dns</i>
+                            <span class="fw-bold">Online</span>
+                        </div>
+                        <hr class="my-2 opacity-10">
+                        <small class="text-muted d-block">IP: 192.168.1.200</small>
+                        <small class="text-muted d-block">Uptime: 48h 12m</small>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-8 col-lg-9">
+                <div class="card border-0 shadow-sm rounded-3">
+                    <div class="card-header bg-body border-bottom py-3">
+                        <h5 class="card-title mb-0 fw-bold text-secondary">Parâmetros da Loja</h5>
+                    </div>
+                    <div class="card-body p-4">
+                        <form id="settings-form">
+                            <div class="row g-3">
+                                <div class="col-12">
+                                    <label class="form-label fw-bold small text-muted">Nome da Filial</label>
+                                    <input type="text" class="form-control" value="Pizza Hut - Shopping Center" id="store-name">
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-muted">Código da Loja (ID)</label>
+                                    <input type="text" class="form-control" value="PH-BR-0544" readonly style="background-color: var(--bs-secondary-bg);">
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold small text-muted">IP do Gateway</label>
+                                    <input type="text" class="form-control" value="192.168.1.1">
+                                </div>
+
+                                <div class="col-12">
+                                    <hr class="my-3 opacity-10">
+                                    <h6 class="fw-bold text-danger mb-3">Opções Avançadas</h6>
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="maintenance-mode">
+                                        <label class="form-check-label fw-medium" for="maintenance-mode">Modo de Manutenção (Bloqueia Caixas)</label>
+                                    </div>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="debug-logs" checked>
+                                        <label class="form-check-label fw-medium" for="debug-logs">Ativar Logs de Depuração</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                                <button type="button" class="btn btn-light border" onclick="window.history.back()">Cancelar</button>
+                                <button type="submit" class="btn btn-pizza-red px-4">Salvar Alterações</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="saveToast" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                    <i class="material-icons align-middle me-2 fs-6">check_circle</i> Configurações salvas com sucesso!
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/settings.js"></script>
+</body>
+</html>

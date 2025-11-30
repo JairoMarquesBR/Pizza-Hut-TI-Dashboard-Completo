@@ -357,3 +357,55 @@ h1, h2, h3, h4, h5, h6, .navbar-brand, .brand-font, .card-title {
     
     .material-icons { color: inherit; }
 }
+/* ... (Mantenha o código anterior) ... */
+
+/* =========================================
+   10. NOTIFICAÇÕES PREMIUM (NOVO)
+   ========================================= */
+#toast-container {
+    z-index: 100000 !important;
+    padding: 20px;
+}
+
+.toast-custom {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: none;
+    border-left: 5px solid; /* Faixa colorida na esquerda */
+    border-radius: 4px; /* Canto levemente arredondado estilo Windows */
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    overflow: hidden;
+    min-width: 320px;
+    transform: translateX(0);
+    transition: all 0.3s ease;
+}
+
+.toast-custom .toast-body {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.toast-custom i { font-size: 1.5rem; margin-right: 15px; }
+
+/* Cores de Status */
+.toast-success { border-left-color: #2ecc71; }
+.toast-success i { color: #2ecc71; }
+
+.toast-error { border-left-color: #e74c3c; }
+.toast-error i { color: #e74c3c; }
+
+.toast-warning { border-left-color: #f1c40f; }
+.toast-warning i { color: #f1c40f; }
+
+/* Ajuste Dark Mode */
+[data-bs-theme="dark"] .toast-custom {
+    background: rgba(40, 40, 40, 0.95);
+    color: #fff;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+}
+[data-bs-theme="dark"] .toast-custom .toast-body { color: #fff; }

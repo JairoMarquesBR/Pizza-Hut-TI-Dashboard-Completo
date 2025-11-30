@@ -1,0 +1,111 @@
+<div class="container-fluid fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold text-secondary ls-1">CONTROLE DE REFEIÇÕES</h4>
+        
+        <ul class="nav nav-pills" id="mealsTab">
+            <li class="nav-item"><button class="nav-link active rounded-pill fw-bold" data-bs-toggle="pill" data-bs-target="#pills-register">Registrar</button></li>
+            <li class="nav-item admin-only"><button class="nav-link rounded-pill fw-bold" data-bs-toggle="pill" data-bs-target="#pills-employees">Colaboradores</button></li>
+            <li class="nav-item admin-only"><button class="nav-link rounded-pill fw-bold" data-bs-toggle="pill" data-bs-target="#pills-history">Histórico</button></li>
+        </ul>
+    </div>
+
+    <div class="tab-content">
+        
+        <div class="tab-pane fade show active" id="pills-register">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <form id="meal-form">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Colaborador</label>
+                                <select class="form-select form-select-lg" id="meal-employee" required>
+                                    <option value="" selected disabled>Selecione...</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Categoria</label>
+                                <input type="text" class="form-control form-control-lg" id="meal-role" readonly style="background-color: var(--bs-body-bg);">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Comida</label>
+                                <input type="text" class="form-control" id="meal-food" placeholder="Ex: Pizza" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Bebida</label>
+                                <input type="text" class="form-control" id="meal-drink" placeholder="Ex: Refrigerante">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted small">Foto do Prato (Obrigatório)</label>
+                                <input type="file" class="form-control" id="meal-file" accept="image/*" required>
+                                <div class="mt-2 text-center">
+                                    <img id="meal-preview" src="" class="img-fluid rounded shadow-sm" style="max-height: 150px; display: none;">
+                                </div>
+                            </div>
+                            <div class="col-12 text-end">
+                                <button type="submit" class="btn btn-success rounded-pill px-5 py-2 fw-bold">
+                                    <i class="material-icons align-middle me-2">check</i> REGISTRAR
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="pills-employees">
+            <div class="card border-0 shadow-sm mb-4 bg-body-tertiary">
+                <div class="card-body">
+                    <h6 class="fw-bold text-danger mb-3">Novo Colaborador</h6>
+                    <form id="emp-form" class="row g-2 align-items-end">
+                        <div class="col-md-6">
+                            <label class="small">Nome Completo</label>
+                            <input type="text" class="form-control" id="emp-name" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="small">Categoria</label>
+                            <select class="form-select" id="emp-type">
+                                <option value="funcionario">Funcionário</option>
+                                <option value="gerencia">Gerência</option>
+                                <option value="convidado">Convidado</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-pizza-red w-100">Adicionar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="card border-0 shadow-sm">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light"><tr><th>Nome</th><th>Função</th><th class="text-end">Ação</th></tr></thead>
+                        <tbody id="emp-list"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="pills-history">
+            <div class="alert alert-light border shadow-sm mb-3">
+                <i class="material-icons align-middle text-primary me-2">info</i>
+                Relatórios agrupados por dia e responsável pelo registro.
+            </div>
+            <div class="card border-0 shadow-sm">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Data</th>
+                                <th>Responsável pelo Registro</th>
+                                <th>Qtd Refeições</th>
+                                <th class="text-end">Exportar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="meal-history-list"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

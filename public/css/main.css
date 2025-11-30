@@ -1,21 +1,53 @@
 /* =========================================
-   1. VARIÁVEIS DE TEMA E FONTES
+   1. IMPORTAÇÃO E VARIÁVEIS
    ========================================= */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Montserrat:wght@600;700;800&display=swap');
+
 :root {
-    --pizza-red: #d32f2f;
-    --pizza-dark: #b71c1c;
+    /* Cores da Marca */
+    --pizza-red: #d32f2f;       
+    --pizza-dark: #b71c1c;      
+    --accent-color: #ffca28;    
+
+    /* Configuração Base (Modo Claro) */
+    --bs-body-bg: #f4f6f8;      
+    --bs-body-color: #2c3e50;
+    --card-bg: #ffffff;
+    --border-color: rgba(0, 0, 0, 0.1);
+    --input-bg: #ffffff;
+    
+    /* Fontes */
     --font-main: 'Inter', sans-serif;
     --font-brand: 'Montserrat', sans-serif;
 }
 
+/* =========================================
+   2. ESTRUTURA BASE
+   ========================================= */
 body {
     font-family: var(--font-main);
-    /* Transição suave de cor de fundo e texto */
-    transition: background-color 0.3s, color 0.3s;
+    background-color: var(--bs-body-bg) !important;
+    color: var(--bs-body-color) !important;
+    padding-top: 70px;    /* Espaço para Navbar Fixa */
+    padding-bottom: 40px; /* Espaço para Footer Fixo */
+    transition: background-color 0.3s ease, color 0.3s ease;
+    overflow-x: hidden; /* Evita rolagem horizontal */
+}
+
+main { flex: 1 0 auto; }
+
+/* Utilitários de Fundo */
+.bg-body-tertiary { background-color: var(--bs-body-bg) !important; }
+
+/* Títulos */
+h1, h2, h3, h4, h5, h6, .navbar-brand, .brand-font, .card-title {
+    font-family: var(--font-brand) !important;
+    letter-spacing: -0.5px;
+    color: var(--bs-body-color);
 }
 
 /* =========================================
-   2. UTILITÁRIOS GERAIS
+   3. COMPONENTES DA MARCA (PIZZA HUT)
    ========================================= */
 .bg-pizza-red { background-color: var(--pizza-red) !important; }
 .text-pizza-red { color: var(--pizza-red) !important; }
@@ -26,135 +58,302 @@ body {
     border: none;
     font-weight: 600;
 }
-.btn-pizza-red:hover { background-color: var(--pizza-dark); color: white; }
+.btn-pizza-red:hover {
+    background-color: var(--pizza-dark);
+    color: white;
+}
 
-.brand-font { font-family: var(--font-brand); letter-spacing: -0.5px; }
-.ls-1 { letter-spacing: 1px; }
+/* Logo Corporativo */
+.brand-corporate { display: flex; align-items: center; }
+.brand-name { font-weight: 800; font-size: 1.4rem; letter-spacing: 0.5px; color: white; }
+.brand-separator { margin: 0 8px; font-weight: 300; opacity: 0.6; font-size: 1.4rem; color: white; }
+.brand-dept { font-weight: 700; font-size: 1.4rem; letter-spacing: 1px; opacity: 0.95; color: white; }
 
 /* =========================================
-   3. CARDS E TILES
+   4. NAVBAR & AVATAR
    ========================================= */
-.tile-card {
-    transition: transform 0.2s, box-shadow 0.2s;
-    border: 1px solid rgba(0,0,0,0.05);
-    overflow: hidden;
-    cursor: pointer;
+.navbar {
+    height: 70px; 
+    z-index: 1030;
+    transition: background-color 0.3s;
 }
+
+/* Logo Centralizado (Absolute) */
+.navbar-brand.position-absolute {
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    white-space: nowrap;
+}
+
+/* Avatar Redondo */
+.nav-avatar {
+    object-fit: cover;
+    border: 2px solid rgba(255,255,255,0.8);
+}
+
+.offcanvas { background-color: var(--pizza-red); }
+
+/* =========================================
+   5. CARDS (TILES)
+   ========================================= */
+.card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--bs-body-color);
+    transition: background-color 0.3s, border-color 0.3s;
+}
+
+.tile-card {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    height: 100%;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
 .tile-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
     border-color: var(--pizza-red);
 }
 
+/* Ícones Coloridos */
 .icon-box {
     width: 50px; height: 50px;
     display: flex; align-items: center; justify-content: center;
-    border-radius: 12px; color: white;
+    border-radius: 12px;
+    font-size: 1.5rem;
 }
-.bg-soft-red { background: rgba(220, 53, 69, 0.1); color: #dc3545; }
-.bg-soft-warning { background: rgba(255, 193, 7, 0.1); color: #ffc107; }
-.bg-soft-primary { background: rgba(13, 110, 253, 0.1); color: #0d6efd; }
-.bg-soft-success { background: rgba(25, 135, 84, 0.1); color: #198754; }
+.bg-soft-red { background: rgba(220, 53, 69, 0.15); color: #e74c3c; }
+.bg-soft-warning { background: rgba(255, 193, 7, 0.15); color: #f1c40f; }
+.bg-soft-primary { background: rgba(13, 110, 253, 0.15); color: #3498db; }
+.bg-soft-success { background: rgba(25, 135, 84, 0.15); color: #2ecc71; }
+.bg-soft-secondary { background: rgba(108, 117, 125, 0.1); color: #6c757d; }
+
+/* =========================================
+   6. MODAL (LAYOUT SEGURO COM SCROLL)
+   ========================================= */
+.modal-content {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    overflow: hidden;
+    max-height: 90vh; /* Limite de altura */
+    display: flex;
+    flex-direction: column; /* Flex vertical */
+}
+
+/* Header Fixo */
+.modal-header {
+    flex-shrink: 0;
+    background-color: var(--pizza-red);
+    color: white;
+    border-bottom: 1px solid var(--border-color);
+    padding: 1rem 1.5rem;
+}
+.modal-header .modal-title { color: white !important; margin: 0; }
+.btn-close-white { filter: invert(1) grayscale(100%) brightness(200%); }
+
+/* Corpo com Rolagem */
+.modal-body {
+    flex-grow: 1;
+    overflow-y: auto; /* Scroll interno apenas aqui */
+    padding: 1.5rem;
+    background-color: var(--card-bg);
+}
+
+/* Rodapé Fixo */
+.modal-footer {
+    flex-shrink: 0;
+    border-top: 1px solid rgba(0,0,0,0.1);
+    background-color: var(--bs-body-bg);
+    padding: 0.75rem 1.5rem;
+}
+
+.dropdown-menu {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+}
+.dropdown-item { color: var(--bs-body-color); }
+.dropdown-item:hover { background-color: rgba(0,0,0,0.05); }
+
+/* =========================================
+   7. FORMULÁRIOS E TABELAS
+   ========================================= */
+.form-control, .form-select {
+    background-color: var(--input-bg);
+    border-color: var(--border-color);
+    color: var(--bs-body-color);
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--pizza-red);
+    box-shadow: 0 0 0 0.25rem rgba(211, 47, 47, 0.25);
+    background-color: var(--input-bg);
+    color: var(--bs-body-color);
+}
+
+.form-control:disabled {
+    background-color: rgba(0,0,0,0.05);
+    color: var(--text-muted);
+}
+
+.table {
+    color: var(--bs-body-color);
+    border-color: var(--border-color);
+}
+.table-light {
+    background-color: rgba(0,0,0,0.05);
+    color: var(--bs-body-color);
+}
+.table-hover tbody tr:hover {
+    background-color: rgba(0,0,0,0.03);
+}
+
+/* =========================================
+   8. ESPECÍFICOS (Admin, Footer, Toasts)
+   ========================================= */
+.profile-hero-card {
+    background: linear-gradient(135deg, var(--pizza-red) 0%, var(--pizza-dark) 100%);
+    color: white !important;
+    border: none;
+}
+.profile-hero-card h3, .profile-hero-card small { color: white !important; }
+
+.status-bar {
+    background-color: #212529;
+    color: #e0e0e0;
+    border-top: 1px solid #333;
+}
+
+/* Notificações / Toasts */
+#toast-container {
+    z-index: 99999 !important; 
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+}
+.toast {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    border: none;
+    overflow: hidden;
+    margin-bottom: 10px;
+    opacity: 1 !important;
+}
+
+/* Menu de Contexto */
+.context-menu {
+    position: absolute;
+    z-index: 9999;
+    background: var(--card-bg);
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 8px;
+    width: 180px;
+    overflow: hidden;
+    display: none;
+}
+.context-menu ul { list-style: none; margin: 0; padding: 5px 0; }
+.context-menu li { padding: 10px 15px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: var(--bs-body-color); }
+.context-menu li:hover { background-color: rgba(0,0,0,0.05); color: var(--pizza-red); }
+
 
 /* Animações */
 .fade-in { animation: fadeIn 0.4s ease-out; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-.pulse-text { animation: pulse 0.5s; }
-@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); color: #ffca28; } 100% { transform: scale(1); } }
+.pulse-effect { animation: pulse 0.5s; }
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); color: var(--accent-color); } 100% { transform: scale(1); } }
 
-/* =========================================
-   4. MODAL (ESTRUTURA)
-   ========================================= */
-.modal-content {
-    border-radius: 16px;
-    overflow: hidden;
-    border: none;
-}
-.modal-header {
-    background-color: var(--pizza-red);
-    color: white;
-    border-bottom: none;
-}
-.modal-footer {
-    border-top: 1px solid rgba(0,0,0,0.1);
-}
-
-/* =========================================
-   5. CORREÇÃO SUPREMA DO DARK MODE
-   ========================================= */
+/* ==========================================================================
+   9. MODO ESCURO (DEFINITIVO E CORRIGIDO)
+   ========================================================================== */
 [data-bs-theme="dark"] {
-    --bs-body-bg: #121212;
-    --bs-body-color: #e0e0e0;
-    
-    /* 1. Força textos escuros a ficarem claros */
-    .text-dark, .text-body { color: #f8f9fa !important; }
-    .text-muted, .text-secondary { color: #adb5bd !important; }
-    
-    /* 2. Cards e Fundos */
-    .card, .list-group-item {
-        background-color: #1e1e1e;
-        border-color: #333;
-        color: #e0e0e0;
-    }
-    .bg-body-tertiary { background-color: #181818 !important; }
-    
-    /* 3. Dropdowns e Menus */
-    .dropdown-menu {
-        background-color: #2c2c2c;
-        border-color: #444;
-    }
-    .dropdown-item { color: #e0e0e0; }
-    .dropdown-item:hover { background-color: #3d3d3d; color: #fff; }
-    .dropdown-header { color: #adb5bd; }
-    
-    /* 4. Modais */
-    .modal-content {
-        background-color: #1e1e1e;
-        border: 1px solid #333;
-    }
-    .modal-header { border-bottom: 1px solid #333; }
-    .modal-footer {
-        background-color: #181818;
-        border-top: 1px solid #333;
-    }
-    .btn-close { filter: invert(1) grayscale(100%) brightness(200%); }
+    /* Variáveis Redefinidas */
+    --bs-body-bg: #121212;      
+    --bs-body-color: #e0e0e0;   
+    --card-bg: #1e1e1e;         
+    --border-color: #333333;    
+    --input-bg: #2c2c2c;
 
-    /* 5. Tabelas */
-    .table { color: #e0e0e0; border-color: #333; }
-    .table-light { background-color: #2c2c2c; color: #fff; }
-    .table-hover tbody tr:hover { color: white; background-color: rgba(255,255,255,0.05); }
+    body {
+        background-color: var(--bs-body-bg) !important;
+        color: var(--bs-body-color) !important;
+    }
+
+    /* Utilitários Bootstrap */
+    .bg-white, .bg-light, .bg-body-tertiary {
+        background-color: var(--bs-body-bg) !important;
+        color: var(--bs-body-color) !important;
+    }
+
+    /* Cards e Dropdowns */
+    .card, .modal-content, .list-group-item, .dropdown-menu, .context-menu {
+        background-color: #1e1e1e !important;
+        border-color: #333 !important;
+        color: #e0e0e0 !important;
+    }
     
-    /* 6. Inputs e Formulários (Onde costuma bugar) */
+    /* Footer de Modal */
+    .modal-footer {
+        background-color: #181818 !important;
+        border-top-color: #333 !important;
+    }
+    .modal-header { border-bottom-color: #333; }
+
+    /* Tabelas */
+    .table { color: #e0e0e0; border-color: #333; }
+    
+    .table-light, 
+    .table-light th, 
+    .table-light td {
+        background-color: #2c2c2c !important;
+        color: #fff !important;
+        border-color: #444 !important;
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(255,255,255,0.05) !important;
+        color: white !important;
+    }
+
+    /* Inputs */
     .form-control, .form-select {
-        background-color: #252525;
-        border-color: #444;
-        color: #fff;
+        background-color: #2c2c2c !important;
+        border-color: #444 !important;
+        color: #fff !important;
     }
     .form-control:focus, .form-select:focus {
-        background-color: #2a2a2a;
-        color: #fff;
-        border-color: var(--pizza-red);
-        box-shadow: 0 0 0 0.25rem rgba(211, 47, 47, 0.25);
+        background-color: #2a2a2a !important;
+    }
+    .form-control:disabled {
+        background-color: #1a1a1a !important;
+        color: #6c757d !important;
+        border-color: #333 !important;
     }
     .form-control::placeholder { color: #6c757d; }
-    .form-control:disabled { background-color: #1a1a1a; color: #6c757d; }
-    
-    /* 7. Ícones Material */
-    .material-icons { color: inherit; } /* Garante que o ícone pegue a cor do texto */
-    
-    /* 8. Botão Link */
-    .btn-link { color: #e0e0e0; }
-}
-/* Navbar Fix */
-.navbar-fixed { height: 70px; z-index: 1030; }
-.bg-pizza-red { background-color: #d32f2f !important; }
 
-.navbar-brand.brand-corporate {
-    display: flex;
-    align-items: center;
-    /* REMOVIDO: position: absolute e transform */
-    margin-right: 2rem;
-}
+    /* Links e Ícones */
+    .dropdown-item { color: #e0e0e0; }
+    .dropdown-item:hover { background-color: #3d3d3d; color: white; }
+    
+    .context-menu li:hover { background-color: rgba(255,255,255,0.1); color: white; }
 
-/* ... (Mantenha o restante do CSS que te mandei na mensagem anterior) */
+    /* Toasts no Dark Mode */
+    .toast {
+        background-color: #2c2c2c;
+        color: #fff;
+        border: 1px solid #444;
+    }
+
+    /* Textos Utilitários */
+    .text-dark, .text-body, .text-secondary { color: #e0e0e0 !important; }
+    .text-muted { color: #adb5bd !important; }
+    
+    .material-icons { color: inherit; }
+}

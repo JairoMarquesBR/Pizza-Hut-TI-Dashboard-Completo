@@ -22,7 +22,7 @@ function initInventoryDb() {
             is_out_of_stock INTEGER DEFAULT 0
         )`);
 
-        // 2. Tabela de Histórico
+        // 2. Tabela de Histórico (Logs para PDF)
         invDb.run(`CREATE TABLE IF NOT EXISTS stock_logs (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             session_id TEXT, 
@@ -35,6 +35,16 @@ function initInventoryDb() {
             count_date TEXT,
             count_time TEXT,
             category_context TEXT
+        )`);
+
+        // 3. Tabela de Alertas (NOVA)
+        invDb.run(`CREATE TABLE IF NOT EXISTS alerts (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT,
+            body TEXT,
+            priority TEXT, -- 'high', 'low'
+            status INTEGER, -- 1 (ativo), 0 (inativo)
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`);
     });
 }

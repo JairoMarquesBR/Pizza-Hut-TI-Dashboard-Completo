@@ -63,7 +63,8 @@ function loadPageScript(pageName) {
     const old = document.getElementById('page-script');
     if(old) old.remove();
     const s = document.createElement('script');
-    s.src = `js/${pageName}.js`;
+    // ADICIONADO TIMESTAMP PARA FORÇAR RECARREGAMENTO
+    s.src = `js/${pageName}.js?v=${Date.now()}`; 
     s.id = 'page-script';
     document.body.appendChild(s);
 }

@@ -146,3 +146,15 @@ body {
     /* 8. Botão Link */
     .btn-link { color: #e0e0e0; }
 }
+/* Navbar Fix */
+.navbar-fixed { height: 70px; z-index: 1030; }
+.bg-pizza-red { background-color: #d32f2f !important; }
+
+.navbar-brand.brand-corporate {
+    display: flex;
+    align-items: center;
+    /* REMOVIDO: position: absolute e transform */
+    margin-right: 2rem;
+}
+
+/* ... (Mantenha o restante do CSS que te mandei na mensagem anterior) */

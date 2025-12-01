@@ -22,7 +22,7 @@
 }
 
 /* =========================================
-   2. ESTRUTURA BASE & TIPOGRAFIA
+   2. ESTRUTURA BASE
    ========================================= */
 body {
     font-family: var(--font-main);
@@ -45,9 +45,6 @@ h1, h2, h3, h4, h5, h6, .navbar-brand, .brand-font, .card-title {
     letter-spacing: -0.5px;
     color: var(--bs-body-color);
 }
-
-/* Utilitário de Espaçamento de Texto */
-.ls-1 { letter-spacing: 1px; }
 
 /* =========================================
    3. COMPONENTES DA MARCA (PIZZA HUT)
@@ -243,31 +240,7 @@ h1, h2, h3, h4, h5, h6, .navbar-brand, .brand-font, .card-title {
     border-top: 1px solid #333;
 }
 
-/* Animações */
-.fade-in { animation: fadeIn 0.4s ease-out; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-.pulse-effect { animation: pulse 0.5s; }
-@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); color: var(--accent-color); } 100% { transform: scale(1); } }
-
-/* Menu de Contexto */
-.context-menu {
-    position: absolute;
-    z-index: 9999;
-    background: var(--card-bg);
-    border: 1px solid rgba(0,0,0,0.1);
-    border-radius: 8px;
-    width: 180px;
-    overflow: hidden;
-    display: none;
-}
-.context-menu ul { list-style: none; margin: 0; padding: 5px 0; }
-.context-menu li { padding: 10px 15px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: var(--bs-body-color); }
-.context-menu li:hover { background-color: rgba(0,0,0,0.05); color: var(--pizza-red); }
-
-/* =========================================
-   9. NOTIFICAÇÕES PREMIUM (TOASTS)
-   ========================================= */
+/* Notificações / Toasts (Glassmorphism) */
 #toast-container {
     z-index: 100000 !important;
     padding: 20px;
@@ -306,8 +279,30 @@ h1, h2, h3, h4, h5, h6, .navbar-brand, .brand-font, .card-title {
 .toast-warning { border-left-color: #f1c40f; }
 .toast-warning i { color: #f1c40f; }
 
+/* Context Menu */
+.context-menu {
+    position: absolute;
+    z-index: 9999;
+    background: var(--card-bg);
+    border: 1px solid rgba(0,0,0,0.1);
+    border-radius: 8px;
+    width: 180px;
+    overflow: hidden;
+    display: none;
+}
+.context-menu ul { list-style: none; margin: 0; padding: 5px 0; }
+.context-menu li { padding: 10px 15px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 0.9rem; color: var(--bs-body-color); }
+.context-menu li:hover { background-color: rgba(0,0,0,0.05); color: var(--pizza-red); }
+
+/* Animações */
+.fade-in { animation: fadeIn 0.4s ease-out; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.pulse-effect { animation: pulse 0.5s; }
+@keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); color: var(--accent-color); } 100% { transform: scale(1); } }
+
 /* =========================================
-   10. ESTOQUE MOBILE (CARDS)
+   9. ESTOQUE MOBILE (CARDS)
    ========================================= */
 .mobile-inv-card {
     background-color: var(--card-bg);
@@ -339,8 +334,18 @@ h1, h2, h3, h4, h5, h6, .navbar-brand, .brand-font, .card-title {
 }
 .mobile-switch .form-check-input { width: 3.5em; height: 1.75em; }
 
+/* Correção de Avatar Mobile */
+#mobile-user-avatar {
+    width: 50px !important;
+    height: 50px !important;
+    min-width: 50px !important;
+    object-fit: cover !important;
+    border-radius: 50% !important;
+    border: 2px solid rgba(255,255,255,0.5);
+}
+
 /* ==========================================================================
-   11. MODO ESCURO (DEFINITIVO)
+   10. MODO ESCURO (DEFINITIVO)
    ========================================================================== */
 [data-bs-theme="dark"] {
     /* Variáveis Redefinidas */
@@ -380,9 +385,12 @@ h1, h2, h3, h4, h5, h6, .navbar-brand, .brand-font, .card-title {
     .modal-content { background-color: #1e1e1e !important; border-color: #333; }
     .modal-header { border-bottom-color: #333; }
     .modal-footer { background-color: #181818 !important; border-top-color: #333; }
+    
     .dropdown-menu { background-color: #2c2c2c; border-color: #444; }
     .dropdown-item { color: #e0e0e0; }
     .dropdown-item:hover { background-color: #3d3d3d; }
+
+    /* Context Menu */
     .context-menu { background-color: #2c2c2c; border-color: #444; }
     .context-menu li:hover { background-color: rgba(255,255,255,0.1); color: white; }
 

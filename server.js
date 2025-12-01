@@ -6,9 +6,10 @@ const path = require('path');
 const crypto = require('crypto'); 
 
 // --- IMPORTAÇÃO DOS BANCOS DE DADOS ---
-const db = require('./database');        // Usuários
-const invDb = require('./inventory_db'); // Estoque
-const mealsDb = require('./meals_db');   // Refeições
+const db = require('./database');        // Usuários (users)
+const invDb = require('./inventory_db'); // Estoque (products, logs, alerts)
+const mealsDb = require('./meals_db');   // Refeições (employees, meal_logs)
+const storeDb = require('./store_db');   // Config da Loja (store_config)
 
 const app = express();
 const PORT = 3000;
@@ -18,7 +19,7 @@ const SECRET_KEY = 'minha_chave_secreta_super_segura_pizzanet';
 const ENC_KEY = crypto.scryptSync('senha_secreta_fotos_pizza', 'salt', 32); 
 const IV_LENGTH = 16; 
 
-// Aumenta limites para aceitar fotos grandes
+// Aumenta limites para aceitar fotos grandes e dados de formulários
 app.use(express.json({ limit: '50mb' })); 
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(cookieParser()); 
@@ -81,7 +82,9 @@ app.post('/api/logout', (req, res) => {
     res.json({ message: 'Ok' });
 });
 
-// --- MIDDLEWARES ---
+// =======================================================
+// 2. MIDDLEWARES DE SEGURANÇA
+// =======================================================
 const authenticateToken = (req, res, next) => {
     const token = req.cookies.token;
     if (!token) return res.status(401).json({ message: 'Acesso negado' });
@@ -101,7 +104,42 @@ const requireAdmin = (req, res, next) => {
 };
 
 // =======================================================
-// 2. CONTROLE DE ESTOQUE (INVENTORY)
+// 3. CONFIGURAÇÃO DA LOJA
+// =======================================================
+// ... (código anterior)
+
+// =======================================================
+// 3. CONFIGURAÇÃO DA LOJA
+// =======================================================
+app.get('/api/store/config', authenticateToken, (req, res) => {
+    storeDb.get("SELECT * FROM store_config WHERE id = 1", (err, row) => {
+        if (err) return res.status(500).json({ error: err.message });
+        res.json(row);
+    });
+});
+
+app.post('/api/store/config', authenticateToken, requireAdmin, (req, res) => {
+    // Recebe support_email no lugar de tax_rate
+    const { franchise_name, branch_name, cnpj, address, phone, manager_name, wifi_ssid, wifi_pass, server_ip, support_email } = req.body;
+    
+    const sql = `UPDATE store_config SET 
+        franchise_name=?, branch_name=?, cnpj=?, address=?, phone=?, 
+        manager_name=?, wifi_ssid=?, wifi_pass=?, server_ip=?, support_email=? 
+        WHERE id = 1`;
+
+    storeDb.run(sql, [franchise_name, branch_name, cnpj, address, phone, manager_name, wifi_ssid, wifi_pass, server_ip, support_email], function(err) {
+        if (err) {
+            console.error("Erro ao salvar loja:", err);
+            return res.status(500).json({ error: err.message });
+        }
+        res.json({ message: "Configurações da loja salvas!" });
+    });
+});
+
+// ... (resto do código igual)
+
+// =======================================================
+// 4. CONTROLE DE ESTOQUE (INVENTORY)
 // =======================================================
 
 // Listar Produtos
@@ -109,25 +147,18 @@ app.get('/api/inventory/products', authenticateToken, (req, res) => {
     const cat = req.query.category;
     let sql = "SELECT * FROM products";
     let params = [];
-    
-    if (cat && cat !== 'all') {
-        sql += " WHERE category = ?";
-        params.push(cat);
-    }
-    
+    if (cat && cat !== 'all') { sql += " WHERE category = ?"; params.push(cat); }
     sql += " ORDER BY name ASC";
-
     invDb.all(sql, params, (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json(rows);
     });
 });
 
-// CRIAR PRODUTO (CASCATA)
+// Criar Produto (CASCATA: Diária -> Semanal -> Mensal)
 app.post('/api/inventory/products', authenticateToken, requireAdmin, (req, res) => {
     const { name, unit, category, min_threshold } = req.body;
     
-    // Define em quais listas criar
     let categoriesToCreate = [];
     if (category === 'diaria') {
         categoriesToCreate = ['diaria', 'semanal', 'mensal'];
@@ -155,22 +186,16 @@ app.put('/api/inventory/products/:id', authenticateToken, requireAdmin, (req, re
     const { name, unit, category, min_threshold } = req.body;
     invDb.run(`UPDATE products SET name=?, unit=?, category=?, min_threshold=? WHERE id=?`, 
         [name, unit, category, min_threshold, req.params.id], 
-        function(err) {
-            if(err) return res.status(500).json({error: err.message});
-            res.json({ message: 'Produto atualizado' });
-        }
+        () => res.json({ message: 'Ok' })
     );
 });
 
 // Excluir Produto
 app.delete('/api/inventory/products/:id', authenticateToken, requireAdmin, (req, res) => {
-    invDb.run("DELETE FROM products WHERE id = ?", req.params.id, function(err) {
-        if(err) return res.status(500).json({error: err.message});
-        res.json({ message: 'Produto deletado' });
-    });
+    invDb.run("DELETE FROM products WHERE id = ?", req.params.id, () => res.json({ message: 'Ok' }));
 });
 
-// ENVIAR CONTAGEM (COM SESSION ID)
+// ENVIAR CONTAGEM (COM SESSION_ID E SINCRONIZAÇÃO POR NOME)
 app.post('/api/inventory/count', authenticateToken, (req, res) => {
     const items = req.body.items;
     const user = req.user.username;
@@ -178,46 +203,39 @@ app.post('/api/inventory/count', authenticateToken, (req, res) => {
     const dateStr = now.toLocaleDateString('pt-BR');
     const timeStr = now.toLocaleTimeString('pt-BR');
     
-    // ID Único para agrupar no PDF
     const sessionId = `CNT-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
     invDb.serialize(() => {
-        // Sincroniza estoque pelo NOME (afeta todas as listas)
+        // Atualiza TODAS as listas que tem produto com mesmo nome
         const upd = invDb.prepare("UPDATE products SET current_qty = ?, is_out_of_stock = ? WHERE name = ?");
         
-        // Grava Log Completo
         const log = invDb.prepare(`INSERT INTO stock_logs 
             (session_id, product_id, product_name, product_unit, qty_counted, is_critical, counted_by, count_date, count_time, category_context) 
             VALUES (?,?,?,?,?,?,?,?,?,?)`);
         
         items.forEach(i => {
             upd.run(i.qty, i.is_out ? 1 : 0, i.name);
-            
             const isCrit = i.is_critical ? 1 : 0;
             log.run(sessionId, i.id, i.name, i.unit, i.qty, isCrit, user, dateStr, timeStr, i.category);
         });
         
         upd.finalize();
         log.finalize();
-        
         res.json({ message: 'Ok', sessionId: sessionId });
     });
 });
 
-// Obter Histórico
+// Obter Logs
 app.get('/api/inventory/logs', authenticateToken, requireAdmin, (req, res) => {
     invDb.all("SELECT * FROM stock_logs ORDER BY id DESC LIMIT 1000", [], (err, rows) => res.json(rows));
 });
 
-// Deletar Histórico
+// Deletar Sessão de Histórico
 app.delete('/api/inventory/logs/:session_id', authenticateToken, requireAdmin, (req, res) => {
-    invDb.run("DELETE FROM stock_logs WHERE session_id = ?", req.params.session_id, (err) => {
-        if(err) return res.status(500).json({error: err.message});
-        res.json({message: 'Ok'});
-    });
+    invDb.run("DELETE FROM stock_logs WHERE session_id = ?", req.params.session_id, () => res.json({message: 'Ok'}));
 });
 
-// Alertas (Estoque Baixo) - Usa DISTINCT para não repetir contagem
+// Alertas (CORRIGIDO COM DISTINCT)
 app.get('/api/alerts/check', authenticateToken, (req, res) => {
     invDb.get("SELECT COUNT(DISTINCT name) as count FROM products WHERE current_qty <= min_threshold", (err, row) => {
         if (err) return res.json([]);
@@ -225,8 +243,9 @@ app.get('/api/alerts/check', authenticateToken, (req, res) => {
         if (row && row.count > 0) {
             alerts.push({
                 title: "Estoque Crítico",
-                body: `Existem ${row.count} itens abaixo do mínimo.`,
-                priority: "high"
+                body: `Existem ${row.count} itens com o estoque em estado critico`,
+                priority: "high",
+                status: 1
             });
         }
         res.json(alerts);
@@ -234,48 +253,31 @@ app.get('/api/alerts/check', authenticateToken, (req, res) => {
 });
 
 // =======================================================
-// 3. MÓDULO REFEIÇÕES (MEALS)
+// 5. MÓDULO REFEIÇÕES (MEALS)
 // =======================================================
-
-// Colaboradores
 app.get('/api/meals/employees', authenticateToken, (req, res) => {
     mealsDb.all("SELECT * FROM employees ORDER BY name ASC", [], (err, rows) => res.json(rows));
 });
 
 app.post('/api/meals/employees', authenticateToken, requireAdmin, (req, res) => {
     const { name, type } = req.body;
-    mealsDb.run("INSERT INTO employees (name, role_type) VALUES (?,?)", [name, type], (err) => {
-        if(err) return res.status(500).json({message: "Erro"});
-        res.json({ message: "Ok" });
-    });
+    mealsDb.run("INSERT INTO employees (name, role_type) VALUES (?,?)", [name, type], () => res.json({ message: "Ok" }));
 });
 
 app.delete('/api/meals/employees/:id', authenticateToken, requireAdmin, (req, res) => {
     mealsDb.run("DELETE FROM employees WHERE id = ?", req.params.id, () => res.json({ message: "Ok" }));
 });
 
-// Registrar Refeição (Criptografado)
 app.post('/api/meals/register', authenticateToken, (req, res) => {
     const { employee_name, role_type, food, drink, photo } = req.body;
-    const user = req.user.username;
-    const dateStr = new Date().toLocaleDateString('pt-BR');
-
-    const encrypted = encrypt(photo);
-
-    mealsDb.run(`INSERT INTO meal_logs (employee_name, role_type, food, drink, photo_data, iv, registered_by, date_str) VALUES (?,?,?,?,?,?,?,?)`,
-        [employee_name, role_type, food, drink, encrypted.content, encrypted.iv, user, dateStr],
-        function(err) {
-            if (err) return res.status(500).json({ message: err.message });
-            res.json({ message: "Registrado!" });
-        }
-    );
+    const enc = encrypt(photo);
+    mealsDb.run("INSERT INTO meal_logs (employee_name, role_type, food, drink, photo_data, iv, registered_by, date_str) VALUES (?,?,?,?,?,?,?,?)", 
+    [employee_name, role_type, food, drink, enc.content, enc.iv, req.user.username, new Date().toLocaleDateString('pt-BR')], 
+    () => res.json({ message: "Ok" }));
 });
 
-// Histórico Refeições (Descriptografa)
 app.get('/api/meals/history', authenticateToken, requireAdmin, (req, res) => {
     mealsDb.all("SELECT * FROM meal_logs ORDER BY id DESC LIMIT 50", [], (err, rows) => {
-        if (err) return res.status(500).json({ error: err.message });
-        
         const decryptedRows = rows.map(row => {
             return { ...row, photo: decrypt(row.photo_data, row.iv) };
         });
@@ -284,7 +286,7 @@ app.get('/api/meals/history', authenticateToken, requireAdmin, (req, res) => {
 });
 
 // =======================================================
-// 4. GESTÃO DE USUÁRIOS
+// 6. GESTÃO DE USUÁRIOS
 // =======================================================
 app.get('/api/users', authenticateToken, requireAdmin, (req, res) => {
     db.all("SELECT username, role, avatar FROM users", [], (err, rows) => res.json(rows));
@@ -309,14 +311,20 @@ app.put('/api/users/:username', authenticateToken, requireAdmin, (req, res) => {
 });
 
 app.delete('/api/users/:username', authenticateToken, requireAdmin, (req, res) => {
-    db.run('DELETE FROM users WHERE username = ?', req.params.username.toLowerCase(), () => res.json({ message: 'Ok' }));
+    const target = req.params.username.toLowerCase();
+    if (target === 'admin' || target === req.user.username) return res.status(400).json({ message: 'Proibido' });
+    db.run('DELETE FROM users WHERE username = ?', target, () => res.json({ message: 'Ok' }));
 });
 
 // =======================================================
-// 5. GERAL
+// 7. GERAL
 // =======================================================
-app.get('/api/dashboard-data', authenticateToken, (req, res) => res.json({ clients: 15, devices: 20 }));
+app.get('/api/dashboard-data', authenticateToken, (req, res) => res.json({ clients: 15, devices: 20, serverStatus: 'Online' }));
 app.get('/settings.html', authenticateToken, requireAdmin, (req, res) => res.sendFile(path.join(__dirname, 'public/settings.html')));
 app.get('*', (req, res) => res.sendFile(path.join(__dirname, 'public', req.path === '/' ? 'index.html' : req.path)));
 
-app.listen(PORT, () => console.log(`SERVER ON ${PORT}`));
+app.listen(PORT, () => {
+    console.log(`--------------------------------------------------`);
+    console.log(`SERVER PIZZANET RODANDO NA PORTA ${PORT}`);
+    console.log(`--------------------------------------------------`);
+});

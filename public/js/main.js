@@ -8,7 +8,7 @@
     }
 })();
 
-// Variáveis de controle do sistema
+// Variáveis de controle
 window.currentInterval = null; // Para limpar loops de outras páginas
 let bsModal = null;            // Instância da Modal Bootstrap
 let avatarBase64 = null;       // Cache para upload de foto
@@ -36,28 +36,26 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // 4. Usuário e Tema
     updateNavbarAvatar();
+    initNavbarInfo(); // Carrega nome da loja e usuário na barra
     checkThemePreference();
     applyAccessControl();
 
     // 5. Alertas (Som e Toasts)
     // Destrava áudio no primeiro clique
     document.body.addEventListener('click', unlockAudio, { once: true });
-    // Inicia verificação cíclica
+    
     setTimeout(() => {
         checkSystemAlerts();
         setInterval(checkSystemAlerts, 30000); // Checa a cada 30s
     }, 2000);
 
     // 6. ROTEAMENTO INTELIGENTE
-    
-    // Se estiver na página de CONFIGURAÇÕES (Admin)
     if (window.location.pathname.includes('settings.html')) {
         console.log("Modo Admin: Settings");
         initSettingsPage();
         document.body.style.visibility = 'visible';
         document.body.style.opacity = '1';
     } 
-    // Se estiver na página INICIAL (SPA)
     else if (document.getElementById('app-content')) {
         loadPage('dashboard');
         // Anti-FOUC (Revela o site suavemente)
@@ -69,93 +67,41 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ======================================================
-// 1. SISTEMA DE NOTIFICAÇÃO (TOAST GLOBAL)
+// 1. NAVBAR DINÂMICA
 // ======================================================
-// ======================================================
-// 1. SISTEMA DE NOTIFICAÇÃO (TOAST PREMIUM)
-// ======================================================
-window.showToast = function(message, type = 'success') {
-    const container = document.getElementById('toast-container');
-    if (!container) return;
-
-    const id = 'toast-' + Date.now();
-    
-    // Define estilos baseados no tipo
-    let typeClass = 'toast-success';
-    let iconName = 'check_circle';
-    
-    if (type === 'error') { typeClass = 'toast-error'; iconName = 'error_outline'; }
-    if (type === 'warning') { typeClass = 'toast-warning'; iconName = 'warning_amber'; }
-
-    // Novo HTML Minimalista e Elegante
-    const html = `
-        <div id="${id}" class="toast toast-custom ${typeClass} show" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-body">
-                <i class="material-icons">${iconName}</i>
-                <span>${message}</span>
-                <button type="button" class="btn-close ms-auto" onclick="document.getElementById('${id}').remove()" style="filter: grayscale(1);"></button>
-            </div>
-        </div>
-    `;
-
-    container.insertAdjacentHTML('beforeend', html);
-
-    // Auto-remove em 5 segundos com efeito visual
-    setTimeout(() => {
-        const el = document.getElementById(id);
-        if(el) {
-            el.style.opacity = '0';
-            el.style.transform = 'translateX(20px)';
-            setTimeout(() => el.remove(), 300);
-        }
-    }, 5000);
-};
-
-// ======================================================
-// 2. SISTEMA DE ALERTAS (SOM + VISUAL)
-// ======================================================
-function unlockAudio() {
-    const audio = document.getElementById('alert-sound');
-    if(audio) {
-        audio.volume = 0;
-        audio.play().then(() => {
-            audio.pause();
-            audio.currentTime = 0;
-            audio.volume = 1.0;
-        }).catch(() => {});
+async function initNavbarInfo() {
+    // Preenche nome do usuário
+    const user = JSON.parse(sessionStorage.getItem('pizzaUserUI'));
+    if(user) {
+        // Desktop
+        const navUser = document.getElementById('navbar-user');
+        if(navUser) navUser.innerText = `Olá, ${user.name.split(' ')[0]}`;
+        
+        // Mobile
+        const mobUser = document.getElementById('mobile-username');
+        if(mobUser) mobUser.innerText = user.name;
     }
-    // Pede permissão de notificação
-    if ("Notification" in window && Notification.permission === "default") {
-        Notification.requestPermission();
-    }
-}
 
-async function checkSystemAlerts() {
+    // Preenche nome da Filial
+    const branchEl = document.getElementById('navbar-branch');
+    const mobBranch = document.getElementById('mobile-branch-title');
+    
     try {
-        const res = await fetch('/api/alerts/check');
-        const alerts = await res.json();
-        if (alerts && alerts.length > 0) {
-            alerts.forEach(alert => triggerAlert(alert));
-        }
-    } catch (e) { console.error("Erro check alerts", e); }
-}
+        const res = await fetch('/api/store/config');
+        const data = await res.json();
+        const storeName = (data && data.branch_name) ? data.branch_name : "PIZZA HUT";
 
-function triggerAlert(alertData) {
-    // 1. Som
-    const audio = document.getElementById('alert-sound');
-    if(audio) audio.play().catch(() => console.log("Som bloqueado"));
+        if(branchEl) branchEl.innerText = storeName;
+        if(mobBranch) mobBranch.innerText = storeName;
 
-    // 2. Toast
-    showToast(alertData.body, 'error');
-    
-    // 3. Push Notification
-    if ("Notification" in window && Notification.permission === "granted" && document.visibilityState === "hidden") {
-        new Notification(alertData.title, { body: alertData.body });
+    } catch(e) {
+        console.warn("Não foi possível carregar config da loja");
+        if(branchEl) branchEl.innerText = "PIZZA HUT";
     }
 }
 
 // ======================================================
-// 3. ROTEADOR SPA
+// 2. ROTEADOR SPA
 // ======================================================
 window.loadPage = async function(pageName) {
     const container = document.getElementById('app-content');
@@ -166,16 +112,19 @@ window.loadPage = async function(pageName) {
         window.currentInterval = null;
     }
     
-    container.innerHTML = `<div class="d-flex justify-content-center align-items-center" style="height: 50vh;"><div class="spinner-border text-danger" style="width: 3rem; height: 3rem;"></div></div>`;
+    container.innerHTML = `
+        <div class="d-flex justify-content-center align-items-center" style="height: 50vh;">
+            <div class="spinner-border text-danger" style="width: 3rem; height: 3rem;" role="status"></div>
+        </div>`;
 
     try {
-        if(cssLink) cssLink.href = `css/${pageName}.css`; // Carrega CSS específico
+        if(cssLink) cssLink.href = `css/${pageName}.css`;
 
         const response = await fetch(`pages/${pageName}.html`);
         if (!response.ok) throw new Error(`Erro ${response.status}`);
         const html = await response.text();
         
-        await new Promise(r => setTimeout(r, 150)); // Delay estético
+        await new Promise(r => setTimeout(r, 150));
         container.innerHTML = html;
 
         loadPageScript(pageName);
@@ -205,7 +154,85 @@ function loadPageScript(pageName) {
 }
 
 // ======================================================
-// 4. MODAIS DINÂMICAS
+// 3. SISTEMA DE NOTIFICAÇÃO (TOAST GLOBAL)
+// ======================================================
+window.showToast = function(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    if (!container) return;
+
+    const id = 'toast-' + Date.now();
+    let typeClass = 'toast-success';
+    let iconName = 'check_circle';
+    
+    if (type === 'error') { typeClass = 'toast-error'; iconName = 'error_outline'; }
+    if (type === 'warning') { typeClass = 'toast-warning'; iconName = 'warning_amber'; }
+
+    const html = `
+        <div id="${id}" class="toast toast-custom ${typeClass} show" role="alert">
+            <div class="toast-body">
+                <i class="material-icons">${iconName}</i>
+                <span>${message}</span>
+                <button type="button" class="btn-close ms-auto" onclick="document.getElementById('${id}').remove()"></button>
+            </div>
+        </div>
+    `;
+
+    container.insertAdjacentHTML('beforeend', html);
+
+    setTimeout(() => {
+        const el = document.getElementById(id);
+        if(el) {
+            el.style.opacity = '0';
+            el.style.transform = 'translateX(20px)';
+            setTimeout(() => el.remove(), 300);
+        }
+    }, 5000);
+};
+
+// ======================================================
+// 4. SISTEMA DE ALERTAS
+// ======================================================
+function unlockAudio() {
+    const audio = document.getElementById('alert-sound');
+    if(audio) {
+        audio.volume = 0;
+        audio.play().then(() => {
+            audio.pause();
+            audio.currentTime = 0;
+            audio.volume = 1.0;
+        }).catch(() => {});
+    }
+    if ("Notification" in window && Notification.permission === "default") {
+        Notification.requestPermission();
+    }
+}
+
+async function checkSystemAlerts() {
+    try {
+        const res = await fetch('/api/alerts/check');
+        const alerts = await res.json();
+        if (alerts && alerts.length > 0) {
+            alerts.forEach(alert => triggerAlert(alert));
+        }
+    } catch (e) { console.error("Erro check alerts", e); }
+}
+
+function triggerAlert(alertData) {
+    const audio = document.getElementById('alert-sound');
+    if(audio) audio.play().catch(() => {});
+
+    showToast(alertData.body, 'error');
+    
+    if ("Notification" in window && Notification.permission === "granted" && document.visibilityState === "hidden") {
+        new Notification(alertData.title, { 
+            body: alertData.body,
+            icon: 'https://cdn-icons-png.flaticon.com/512/564/564619.png'
+        });
+    }
+}
+
+// ======================================================
+// 5. MODAIS DINÂMICAS
 // ======================================================
 function setupModalTriggers() {
     document.body.addEventListener('click', function(e) {
@@ -215,7 +242,6 @@ function setupModalTriggers() {
             const title = trigger.getAttribute('data-title');
             let file = trigger.getAttribute('data-file');
             
-            // Corrige caminho se necessário (padrão: pasta pages/)
             if (file && !file.includes('/')) file = 'pages/' + file;
             
             openDynamicModal(title, file || 'pages/modal-default.html');
@@ -246,19 +272,17 @@ async function openDynamicModal(title, fileUrl) {
 }
 
 // ======================================================
-// 5. PREFERÊNCIAS (PERFIL)
+// 6. PREFERÊNCIAS (PERFIL)
 // ======================================================
 function initPreferencesLogic() {
     const user = getCurrentUser();
     if (!user) return;
 
-    // Hero Info
     const elUser = document.getElementById('pref-username');
     const elRole = document.getElementById('pref-role');
     if (elUser) elUser.innerText = user.name;
-    if (elRole) elRole.innerText = user.role === 'admin' ? 'ADMINISTRADOR' : 'OPERADOR';
+    if (elRole) elRole.innerText = user.role.toUpperCase();
 
-    // Hero Avatar
     const heroImg = document.getElementById('hero-avatar-img');
     const heroIcon = document.getElementById('hero-avatar-icon');
     if (heroImg && heroIcon) {
@@ -272,22 +296,15 @@ function initPreferencesLogic() {
         }
     }
 
-    // Painel Admin (Apenas Link)
-    if (user.role === 'admin') {
-        const panel = document.getElementById('admin-user-manager');
-        if (panel) panel.classList.remove('d-none');
-    }
-    
-    // Tema Switch
-    const ts = document.getElementById('pref-theme');
-    if(ts) {
-        ts.checked = localStorage.getItem('theme') === 'dark';
-        ts.addEventListener('change', toggleTheme);
+    const themeSwitch = document.getElementById('pref-theme');
+    if (themeSwitch) {
+        themeSwitch.checked = localStorage.getItem('theme') === 'dark';
+        themeSwitch.addEventListener('change', toggleTheme);
     }
 }
 
 // ======================================================
-// 6. ADMINISTRAÇÃO (CRUD USUÁRIOS - Settings.html)
+// 7. ADMINISTRAÇÃO (CRUD USUÁRIOS)
 // ======================================================
 function initSettingsPage() {
     loadUsersList();
@@ -334,7 +351,6 @@ function setupUserForm() {
     const fileInput = document.getElementById('form-file');
     if(!form) return;
 
-    // Preview de Foto
     if(fileInput) {
         fileInput.addEventListener('change', function() {
             const file = this.files[0];
@@ -347,10 +363,10 @@ function setupUserForm() {
                 const r = new FileReader();
                 r.onload = (e) => { 
                     avatarBase64 = e.target.result;
-                    const preview = document.getElementById('form-avatar-preview');
-                    const icon = document.getElementById('form-avatar-icon');
-                    if(preview) { preview.src = avatarBase64; preview.style.display='inline-block'; }
-                    if(icon) icon.style.display='none';
+                    const p = document.getElementById('form-avatar-preview');
+                    const i = document.getElementById('form-avatar-icon');
+                    if(p) { p.src = avatarBase64; p.style.display='inline-block'; }
+                    if(i) i.style.display='none';
                 };
                 r.readAsDataURL(file);
             }
@@ -359,7 +375,6 @@ function setupUserForm() {
 
     form.onsubmit = async (e) => {
         e.preventDefault();
-        
         const u = document.getElementById('form-username').value;
         const p = document.getElementById('form-password').value;
         const r = document.getElementById('form-role').value;
@@ -375,8 +390,7 @@ function setupUserForm() {
             
             if (res.ok) {
                 const cur = getCurrentUser();
-                // Atualiza sessão se editou o próprio usuário
-                if(cur && cur.username === u) {
+                if(cur.username === u) {
                     if(avatarBase64) cur.avatar = avatarBase64;
                     cur.role = r;
                     sessionStorage.setItem('pizzaUserUI', JSON.stringify(cur));
@@ -395,28 +409,33 @@ function setupUserForm() {
 
 window.editUser = function(u) {
     avatarBase64 = null;
-    const iUser = document.getElementById('form-username');
-    iUser.value = u.username; iUser.disabled = true;
+    const inputUser = document.getElementById('form-username');
+    inputUser.value = u.username;
+    inputUser.disabled = true;
     document.getElementById('form-role').value = u.role;
     document.getElementById('form-password').placeholder = '(Opcional)';
     
-    const p = document.getElementById('form-avatar-preview');
-    const i = document.getElementById('form-avatar-icon');
-    if(u.avatar && p) { p.src = u.avatar; p.style.display='inline-block'; i.style.display='none'; }
-    else { p.style.display='none'; i.style.display='inline-block'; }
-    
+    const preview = document.getElementById('form-avatar-preview');
+    const icon = document.getElementById('form-avatar-icon');
+    if(u.avatar && preview) { 
+        preview.src = u.avatar; preview.style.display='inline-block'; 
+        if(icon) icon.style.display='none'; 
+    } else if(preview) { 
+        preview.style.display='none'; if(icon) icon.style.display='inline-block'; 
+    }
     window.scrollTo(0,0);
 }
 
 window.resetUserForm = function() {
-    document.getElementById('user-form').reset();
+    const form = document.getElementById('user-form');
+    if(form) form.reset();
     avatarBase64 = null;
-    const userInp = document.getElementById('form-username');
-    if(userInp) userInp.disabled = false;
-    const preview = document.getElementById('form-avatar-preview');
-    const icon = document.getElementById('form-avatar-icon');
-    if(preview) preview.style.display = 'none';
-    if(icon) icon.style.display = 'inline-block';
+    document.getElementById('form-username').disabled = false;
+    document.getElementById('form-password').placeholder = 'Senha';
+    const p = document.getElementById('form-avatar-preview');
+    const i = document.getElementById('form-avatar-icon');
+    if(p) p.style.display = 'none';
+    if(i) i.style.display = 'inline-block';
 };
 
 window.deleteUser = async function(u) {
@@ -432,18 +451,18 @@ window.deleteUser = async function(u) {
     } catch(e) { console.error(e); }
 };
 
+// ======================================================
+// 8. UTILITÁRIOS GERAIS
+// ======================================================
 
-// ======================================================
-// 7. UTILITÁRIOS GERAIS
-// ======================================================
 function updateNavbarAvatar() {
-    const user = JSON.parse(sessionStorage.getItem('pizzaUserUI'));
+    const user = getCurrentUser();
     if(!user) return;
     
-    const elName = document.getElementById('nav-username-display');
-    const elRole = document.getElementById('nav-role-display');
-    if(elName) elName.innerText = user.name;
-    if(elRole) elRole.innerText = user.role.toUpperCase();
+    const nameEl = document.getElementById('nav-username-display');
+    const roleEl = document.getElementById('nav-role-display');
+    if(nameEl) nameEl.innerText = user.name;
+    if(roleEl) roleEl.innerText = user.role.toUpperCase();
 
     const src = user.avatar || `https://ui-avatars.com/api/?name=${user.name}&background=d32f2f&color=fff`;
     
@@ -481,6 +500,8 @@ function toggleTheme() {
     localStorage.setItem('theme', next);
     const icon = document.getElementById('theme-icon');
     if(icon) icon.innerText = next === 'dark' ? 'light_mode' : 'dark_mode';
+    const sw = document.getElementById('pref-theme');
+    if(sw) sw.checked = next === 'dark';
 }
 
 function checkThemePreference() {

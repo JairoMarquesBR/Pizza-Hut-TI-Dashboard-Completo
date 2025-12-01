@@ -2,16 +2,14 @@
 <html lang="pt-br" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Configurações | Admin</title>
+    <title>Configurações | Pizza Hut TI</title>
     
     <script>
         const u = JSON.parse(sessionStorage.getItem('pizzaUserUI'));
-        if (!u) window.location.href = 'login.html';
-        if (u.role !== 'admin') window.location.href = 'index.html';
+        if (!u || u.role !== 'admin') window.location.href = 'index.html';
     </script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/main.css">
@@ -21,110 +19,157 @@
     <nav class="navbar navbar-dark bg-pizza-red shadow-sm fixed-top" style="height: 70px;">
         <div class="container-fluid px-4">
             <div class="d-flex align-items-center">
-                <a href="index.html" class="btn btn-link text-white p-0 me-3"><i class="material-icons" style="font-size: 28px;">arrow_back</i></a>
-                <span class="navbar-brand brand-font fw-bold fs-4 text-white">Configurações</span>
+                <a href="index.html" class="btn btn-link text-white p-0 me-3"><i class="material-icons fs-2">arrow_back</i></a>
+                <span class="navbar-brand brand-font fw-bold fs-4">Configurações</span>
             </div>
-            <div class="d-flex align-items-center gap-3">
-                <button class="btn btn-link text-white p-0 d-flex align-items-center" onclick="toggleTheme()">
-                    <i class="material-icons" id="theme-icon">dark_mode</i>
-                </button>
-                <div class="vr bg-white opacity-50"></div>
-                <div class="d-flex align-items-center text-white">
-                    <i class="material-icons me-2">verified_user</i>
-                    <span class="fw-bold d-none d-md-block">Área Administrativa</span>
-                </div>
+            <div class="d-flex align-items-center text-white gap-2">
+                <i class="material-icons">verified_user</i>
+                <span class="fw-bold d-none d-md-block">Área Administrativa</span>
             </div>
         </div>
     </nav>
 
     <main class="container py-5" style="margin-top: 70px;">
-        
         <div class="row g-4">
+            
             <div class="col-md-3">
                 <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
-                    <div class="list-group list-group-flush">
-                        <a href="#" class="list-group-item list-group-item-action active bg-pizza-red border-0 fw-bold">
-                            <i class="material-icons align-middle me-2 fs-6">people</i> Usuários
-                        </a>
-                        <a href="#" class="list-group-item list-group-item-action" onclick="alert('Logs em breve')">
-                            <i class="material-icons align-middle me-2 fs-6">history</i> Logs
-                        </a>
+                    <div class="list-group list-group-flush" id="settings-menu">
+                        <button class="list-group-item list-group-item-action active py-3 fw-bold d-flex align-items-center" onclick="switchTab('users', this)">
+                            <i class="material-icons me-2">people</i> Gestão de Usuários
+                        </button>
+                        
+                        <button class="list-group-item list-group-item-action py-3 fw-bold d-flex align-items-center" onclick="switchTab('store', this)">
+                            <i class="material-icons me-2">store</i> Configuração da Loja
+                        </button>
                     </div>
                 </div>
             </div>
 
             <div class="col-md-9">
-                <div class="card border-0 shadow-sm mb-4">
-                    <div class="card-header bg-white border-bottom py-3">
-                        <h6 class="fw-bold text-danger mb-0"><i class="material-icons align-middle me-2">person_add</i> Gerenciar Usuários</h6>
-                    </div>
-                    <div class="card-body p-4">
-                        <form id="user-form">
-                            <div class="row g-3">
-                                <div class="col-12 d-flex align-items-center mb-2">
-                                    <div class="me-3 position-relative" onclick="document.getElementById('form-file').click()" style="cursor: pointer;">
-                                        <img id="form-avatar-preview" src="" class="rounded-circle shadow-sm bg-white" width="60" height="60" style="display:none; object-fit:cover;">
-                                        <i id="form-avatar-icon" class="material-icons text-secondary" style="font-size: 60px;">add_a_photo</i>
+                
+                <div id="section-users">
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-header bg-white border-bottom py-3">
+                            <h6 class="fw-bold text-danger mb-0">Novo Usuário</h6>
+                        </div>
+                        <div class="card-body p-4">
+                            <form id="user-form">
+                                <div class="row g-3">
+                                    <div class="col-12 d-flex align-items-center mb-2">
+                                        <div class="me-3 position-relative" onclick="document.getElementById('form-file').click()" style="cursor: pointer;">
+                                            <img id="form-avatar-preview" src="" class="rounded-circle shadow-sm bg-white" width="60" height="60" style="display:none; object-fit:cover;">
+                                            <i id="form-avatar-icon" class="material-icons text-secondary" style="font-size: 60px;">add_a_photo</i>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <input class="form-control form-control-sm" type="file" id="form-file" accept="image/*">
+                                        </div>
                                     </div>
-                                    <div class="flex-grow-1">
-                                        <label class="form-label small text-muted mb-1">Foto de Perfil (Opcional)</label>
-                                        <input class="form-control form-control-sm" type="file" id="form-file" accept="image/*">
-                                    </div>
-                                </div>
-
-                                <div class="col-md-4">
-                                    <div class="form-floating">
-                                        <input type="text" class="form-control" id="form-username" placeholder="Login" required>
-                                        <label>Login</label>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-floating">
-                                        <input type="password" class="form-control" id="form-password" placeholder="Senha">
-                                        <label>Senha</label>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <div class="form-floating">
+                                    <div class="col-md-4"><input type="text" class="form-control" id="form-username" placeholder="Login" required></div>
+                                    <div class="col-md-4"><input type="password" class="form-control" id="form-password" placeholder="Senha"></div>
+                                    <div class="col-md-4">
                                         <select class="form-select" id="form-role">
-                                            <option value="user">Caixa (Operador)</option>
-                                            <option value="admin">Gerente (Admin)</option>
+                                            <option value="user">Caixa</option>
+                                            <option value="admin">Admin</option>
                                         </select>
-                                        <label>Permissão</label>
+                                    </div>
+                                    <div class="col-12 text-end">
+                                        <button type="button" class="btn btn-link text-muted" onclick="resetUserForm()">Limpar</button>
+                                        <button type="submit" class="btn btn-pizza-red px-4 rounded-pill">Salvar</button>
                                     </div>
                                 </div>
-                                
-                                <div class="col-12 text-end mt-2">
-                                    <button type="button" class="btn btn-link text-muted text-decoration-none me-2" onclick="resetUserForm()">Cancelar</button>
-                                    <button type="submit" class="btn btn-pizza-red px-4 rounded-pill">Salvar Usuário</button>
-                                </div>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="card border-0 shadow-sm">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0">
+                                <thead class="table-light"><tr><th class="ps-4">Foto</th><th>Login</th><th>Cargo</th><th class="text-end pe-4">Ação</th></tr></thead>
+                                <tbody id="users-table-body"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
 
-                <div class="card border-0 shadow-sm overflow-hidden">
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead class="table-light">
-                                <tr>
-                                    <th class="ps-4">Foto</th>
-                                    <th>Usuário</th>
-                                    <th>Cargo</th>
-                                    <th class="text-end pe-4">Ações</th>
-                                </tr>
-                            </thead>
-                            <tbody id="users-table-body">
-                                <tr><td colspan="4" class="text-center py-4 text-muted">Iniciando lista...</td></tr>
-                            </tbody>
-                        </table>
+                <div id="section-store" class="d-none">
+                    <div class="card border-0 shadow-sm">
+                        <div class="card-header bg-white border-bottom py-3">
+                            <h6 class="fw-bold text-danger mb-0">Perfil da Unidade</h6>
+                        </div>
+                        <div class="card-body p-4">
+                            <form id="store-form">
+                                <h6 class="text-muted small text-uppercase fw-bold mb-3">Identidade</h6>
+                                <div class="row g-3 mb-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Franquia</label>
+                                        <input type="text" class="form-control" id="st-franchise" value="Pizza Hut">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Nome da Filial</label>
+                                        <input type="text" class="form-control" id="st-branch" placeholder="Ex: Shopping Centro">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">CNPJ</label>
+                                        <input type="text" class="form-control" id="st-cnpj">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Gerente Responsável</label>
+                                        <input type="text" class="form-control" id="st-manager">
+                                    </div>
+                                </div>
+
+                                <h6 class="text-muted small text-uppercase fw-bold mb-3">Localização & Contato</h6>
+                                <div class="row g-3 mb-4">
+                                    <div class="col-12">
+                                        <label class="form-label">Endereço Completo</label>
+                                        <input type="text" class="form-control" id="st-address">
+                                    </div>
+                                    <div class="col-md-6">
+    <label class="form-label">Telefone / WhatsApp</label>
+    <input type="text" class="form-control" id="st-phone">
+</div>
+
+<div class="col-md-6">
+    <label class="form-label">E-mail de Suporte TI</label>
+    <div class="input-group">
+        <span class="input-group-text bg-white"><i class="material-icons fs-6">email</i></span>
+        <input type="email" class="form-control" id="st-email" placeholder="suporte@pizzahut.com">
+    </div>
+</div>
+
+                                <h6 class="text-muted small text-uppercase fw-bold mb-3">Infraestrutura de TI</h6>
+                                <div class="row g-3 mb-4 bg-light p-3 rounded-3 border">
+                                    <div class="col-md-4">
+                                        <label class="form-label">IP do Servidor</label>
+                                        <input type="text" class="form-control font-monospace" id="st-ip">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Wi-Fi SSID</label>
+                                        <input type="text" class="form-control" id="st-wifi">
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label">Senha Wi-Fi</label>
+                                        <input type="text" class="form-control font-monospace" id="st-pass">
+                                    </div>
+                                </div>
+
+                                <div class="text-end">
+                                    <button type="submit" class="btn btn-success rounded-pill px-5 fw-bold shadow-sm">
+                                        <i class="material-icons align-middle me-2">save</i> SALVAR CONFIGURAÇÕES
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
+
             </div>
         </div>
     </main>
+    
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toast-container"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="js/main.js"></script>
+    <script src="js/settings.js"></script>
 </body>
 </html>

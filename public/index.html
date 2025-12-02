@@ -7,8 +7,6 @@
     
     <script>
         if (!sessionStorage.getItem('pizzaUserUI')) window.location.href = 'login.html';
-        const savedTheme = localStorage.getItem('theme') || 'light';
-        document.documentElement.setAttribute('data-bs-theme', savedTheme);
     </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -19,6 +17,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/main.css">
     <link rel="stylesheet" href="" id="page-style">
+    <style>body { visibility: hidden; opacity: 0; transition: opacity 0.3s ease-in-out; }</style>
+    <script>
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-bs-theme', savedTheme);
+    </script>
 </head>
 <body class="bg-body-tertiary">
 
@@ -34,50 +37,53 @@
     <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 99999;" id="toast-container"></div>
     <audio id="alert-sound" src="https://actions.google.com/sounds/v1/alarms/beep_short.ogg" preload="auto"></audio>
 
-    <nav class="navbar navbar-expand-lg navbar-dark bg-pizza-red fixed-top shadow-sm" style="height: 70px;">
-        <div class="container-fluid px-4">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-pizza-red fixed-top shadow-sm" style="height: 60px;">
+        <div class="container-fluid px-3">
             
-            <button class="btn btn-link text-white d-lg-none me-3 p-0 border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
-                <i class="material-icons" style="font-size: 32px;">menu</i>
+            <button class="btn btn-link text-white d-lg-none me-2 p-0 border-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu">
+                <i class="material-icons" style="font-size: 28px;">menu</i>
             </button>
 
-            <a class="navbar-brand d-flex align-items-center brand-corporate mx-auto position-absolute start-50 translate-middle-x" href="#" onclick="loadPage('dashboard')">
-                <div class="icon-box bg-white text-pizza-red rounded-circle me-2 shadow-sm" style="width: 40px; height: 40px;">
-                    <i class="material-icons" style="font-size: 24px;">local_pizza</i>
+            <a class="navbar-brand d-flex align-items-center mx-auto position-absolute start-50 translate-middle-x" href="#" onclick="loadPage('dashboard')">
+                <div class="icon-box bg-white text-pizza-red rounded-circle me-2 shadow-sm d-none d-lg-flex" style="width: 36px; height: 36px;">
+                    <i class="material-icons" style="font-size: 20px;">local_pizza</i>
                 </div>
-                <div class="d-flex flex-column justify-content-center" style="line-height: 1;">
-                    <span class="fw-bold ls-1 text-uppercase" style="font-size: 1.1rem; font-family: 'Montserrat', sans-serif;" id="navbar-branch">CARREGANDO...</span>
-                    <small class="opacity-75 text-white" style="font-size: 0.7rem;" id="navbar-user">...</small>
+                
+                <div class="d-flex flex-column justify-content-center text-center text-lg-start" style="line-height: 1.1;">
+                    <span class="fw-bold ls-1" style="font-size: 1rem; font-family: 'Montserrat', sans-serif;" id="navbar-branch">CARREGANDO...</span>
+                    <small class="opacity-75 d-none d-lg-block" style="font-size: 0.65rem; text-transform: uppercase;" id="navbar-user">...</small>
                 </div>
             </a>
 
             <div class="collapse navbar-collapse d-none d-lg-block">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link text-white fw-medium px-3 ls-1" href="#" onclick="loadPage('dashboard')">VISÃO GERAL</a></li>
+                <ul class="navbar-nav ms-4">
+                    <li class="nav-item"><a class="nav-link text-white px-3" style="font-size: 0.85rem;" href="#" onclick="loadPage('dashboard')">VISÃO GERAL</a></li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle text-white fw-medium px-3 ls-1" href="#" role="button" data-bs-toggle="dropdown">FERRAMENTAS</a>
+                        <a class="nav-link dropdown-toggle text-white px-3" style="font-size: 0.85rem;" href="#" role="button" data-bs-toggle="dropdown">FERRAMENTAS</a>
                         <ul class="dropdown-menu shadow border-0 mt-2 rounded-3">
-                            <li><a class="dropdown-item py-2" href="#" onclick="loadPage('meals')"><i class="material-icons fs-6 me-2 text-secondary">restaurant</i> Refeições</a></li>
-                            <li><a class="dropdown-item py-2" href="#" onclick="loadPage('inventory')"><i class="material-icons fs-6 me-2 text-secondary">inventory</i> Estoque</a></li>
-                            <li><a class="dropdown-item py-2" href="#" onclick="loadPage('remote')"><i class="material-icons fs-6 me-2 text-secondary">desktop_windows</i> Acesso Remoto</a></li>
-                            <li><a class="dropdown-item py-2 action-trigger" href="#" data-title="Contagem" data-file="pages/modal-counter.html"><i class="material-icons fs-6 me-2 text-secondary">exposure</i> Contagem</a></li>
+                            <li><a class="dropdown-item py-2" href="#" onclick="loadPage('meals')"><i class="material-icons align-middle fs-6 me-2 text-secondary">restaurant</i> Refeições</a></li>
+                            <li><a class="dropdown-item py-2" href="#" onclick="loadPage('inventory')"><i class="material-icons align-middle fs-6 me-2 text-secondary">inventory</i> Estoque</a></li>
+                            <li><a class="dropdown-item py-2" href="#" onclick="loadPage('remote')"><i class="material-icons align-middle fs-6 me-2 text-secondary">desktop_windows</i> Acesso Remoto</a></li>
                             <li class="admin-only"><hr class="dropdown-divider"></li>
-                            <li class="admin-only"><a class="dropdown-item py-2 text-danger" href="settings.html"><i class="material-icons fs-6 me-2 text-secondary">settings</i> Configuração</a></li>
+                            <li class="admin-only"><a class="dropdown-item py-2 text-danger" href="settings.html"><i class="material-icons align-middle fs-6 me-2">settings</i> Configuração</a></li>
                         </ul>
                     </li>
                 </ul>
             </div>
 
-            <div class="d-flex align-items-center gap-3 ms-auto">
+            <div class="d-none d-lg-flex align-items-center gap-2 ms-auto">
                 <button class="btn btn-link text-white p-0 d-flex align-items-center" onclick="toggleTheme()">
-                    <i class="material-icons" id="theme-icon">dark_mode</i>
+                    <i class="material-icons" id="theme-icon" style="font-size: 20px;">dark_mode</i>
                 </button>
+                
+                <div class="vr opacity-50 bg-white mx-2" style="height: 20px;"></div>
+
                 <div class="dropdown">
                     <a href="#" class="d-flex align-items-center text-decoration-none" data-bs-toggle="dropdown">
-                        <img id="nav-user-avatar" src="" class="rounded-circle border border-2 border-white/50 shadow-sm" width="40" height="40" style="display:none; object-fit: cover;">
-                        <i id="nav-user-icon" class="material-icons text-white" style="font-size: 32px;">account_circle</i>
+                        <img id="nav-user-avatar" src="" class="rounded-circle border border-2 border-white/50 shadow-sm" width="32" height="32" style="display:none; object-fit: cover;">
+                        <i id="nav-user-icon" class="material-icons text-white" style="font-size: 28px;">account_circle</i>
                     </a>
-                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-3 rounded-3 p-2">
+                    <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-3 rounded-3 p-2" style="min-width: 200px;">
                         <li><a class="dropdown-item rounded-2 py-2 action-trigger" href="#" data-title="Perfil" data-file="pages/modal-preferences.html"><i class="material-icons align-middle me-2 fs-6">person</i> Perfil</a></li>
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item rounded-2 py-2 text-danger" href="javascript:void(0)" onclick="logout()"><i class="material-icons align-middle me-2 fs-6">logout</i> Sair</a></li>
@@ -92,50 +98,28 @@
             <h5 class="offcanvas-title fw-bold brand-font" id="mobile-branch-title">CARREGANDO...</h5>
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
         </div>
-        <div class="offcanvas-body p-0">
-            <div class="bg-black bg-opacity-10 p-4 mb-2">
-                <div class="d-flex align-items-center">
-                    <img id="mobile-user-avatar" src="" class="rounded-circle me-3 border border-2 border-white shadow-sm" style="width: 55px; height: 55px; min-width: 55px; object-fit: cover;">
-                    <div>
-                        <div class="fw-bold fs-5" id="mobile-username">...</div>
-                        <small class="opacity-75 text-uppercase" style="font-size: 0.75rem;">Conectado</small>
-                    </div>
+        <div class="offcanvas-body pt-0">
+            <div class="d-flex align-items-center mb-4 p-3 bg-white bg-opacity-10 rounded-3 mt-3">
+                <img id="mobile-user-avatar" src="" class="rounded-circle me-3 border border-2 border-white shadow-sm" style="width: 50px; height: 50px; min-width: 50px; object-fit: cover;">
+                <div style="overflow: hidden;">
+                    <div class="fw-bold text-truncate" id="mobile-username">...</div>
+                    <small class="opacity-75 text-uppercase" style="font-size: 0.7rem;">Mobile Access</small>
                 </div>
             </div>
-
-            <div class="list-group list-group-flush bg-transparent">
-                <a href="#" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3 action-trigger" data-title="Perfil" data-file="pages/modal-preferences.html">
-                    <i class="material-icons align-middle me-3">person</i> Meu Perfil
-                </a>
-                
-                <div class="p-3 text-white-50 small fw-bold text-uppercase ls-1">Ferramentas</div>
-                
-                <a href="#" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3" onclick="loadPage('dashboard')">
-                    <i class="material-icons align-middle me-3">dashboard</i> Visão Geral
-                </a>
-                <a href="#" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3" onclick="loadPage('meals')">
-                    <i class="material-icons align-middle me-3">restaurant</i> Refeições
-                </a>
-                <a href="#" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3" onclick="loadPage('inventory')">
-                    <i class="material-icons align-middle me-3">inventory</i> Estoque
-                </a>
-                <a href="#" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3" onclick="loadPage('remote')">
-                    <i class="material-icons align-middle me-3">desktop_windows</i> Acesso Remoto
-                </a>
-                <a href="settings.html" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3 admin-only">
-                    <i class="material-icons align-middle me-3">settings</i> Configuração Loja
-                </a>
-                
-                <div class="border-top border-white border-opacity-10 mt-2"></div>
-                
-                <a href="javascript:void(0)" onclick="logout()" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3">
-                    <i class="material-icons align-middle me-3">logout</i> Sair do Sistema
-                </a>
+            <div class="d-grid gap-2">
+                <a href="#" class="btn btn-link text-white text-decoration-none text-start action-trigger" data-title="Perfil" data-file="pages/modal-preferences.html"><i class="material-icons align-middle me-2">person</i> Perfil</a>
+                <a href="#" class="btn btn-link text-white text-decoration-none text-start" onclick="loadPage('dashboard')"><i class="material-icons align-middle me-2">dashboard</i> Visão Geral</a>
+                <a href="#" class="btn btn-link text-white text-decoration-none text-start" onclick="loadPage('meals')"><i class="material-icons align-middle me-2">restaurant</i> Refeições</a>
+                <a href="#" class="btn btn-link text-white text-decoration-none text-start" onclick="loadPage('inventory')"><i class="material-icons align-middle me-2">inventory</i> Estoque</a>
+                <a href="#" class="btn btn-link text-white text-decoration-none text-start" onclick="loadPage('remote')"><i class="material-icons align-middle me-2">desktop_windows</i> Acesso Remoto</a>
+                <a href="settings.html" class="btn btn-link text-white text-decoration-none text-start admin-only"><i class="material-icons align-middle me-2">settings</i> Configuração</a>
+                <hr class="border-white opacity-25">
+                <a href="javascript:void(0)" onclick="logout()" class="btn btn-link text-white text-decoration-none text-start"><i class="material-icons align-middle me-2">logout</i> Sair</a>
             </div>
         </div>
     </div>
 
-    <main id="app-content" class="container-fluid py-4" style="margin-top: 75px; margin-bottom: 50px;"></main>
+    <main id="app-content" class="container-fluid py-4" style="margin-top: 65px; margin-bottom: 50px;"></main>
 
     <div class="modal fade" id="main-modal" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
@@ -156,10 +140,9 @@
         <div class="container-fluid d-flex justify-content-between align-items-center h-100 font-monospace" style="font-size: 0.75rem;">
             <div class="d-flex align-items-center gap-3">
                 <span id="conn-status" class="fw-bold text-success">Online</span>
-                <span class="d-none d-sm-inline opacity-75 border-start border-secondary ps-3">Ping: <span id="real-ping" class="fw-bold text-white">...</span></span>
-                <span class="d-none d-md-inline opacity-75 border-start border-secondary ps-3">IP: <span id="real-ip">...</span></span>
+                <span class="d-none d-sm-inline opacity-75 ps-3 border-start border-secondary">Ping: <span id="real-ping" class="text-white">...</span></span>
             </div>
-            <div class="fw-bold font-monospace ls-1 text-white" id="clock">--:--:--</div>
+            <div class="fw-bold text-white" id="clock">--:--</div>
         </div>
     </footer>
 

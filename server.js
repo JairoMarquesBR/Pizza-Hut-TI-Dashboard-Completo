@@ -106,11 +106,6 @@ const requireAdmin = (req, res, next) => {
 // =======================================================
 // 3. CONFIGURAÇÃO DA LOJA
 // =======================================================
-// ... (código anterior)
-
-// =======================================================
-// 3. CONFIGURAÇÃO DA LOJA
-// =======================================================
 app.get('/api/store/config', authenticateToken, (req, res) => {
     storeDb.get("SELECT * FROM store_config WHERE id = 1", (err, row) => {
         if (err) return res.status(500).json({ error: err.message });
@@ -119,7 +114,6 @@ app.get('/api/store/config', authenticateToken, (req, res) => {
 });
 
 app.post('/api/store/config', authenticateToken, requireAdmin, (req, res) => {
-    // Recebe support_email no lugar de tax_rate
     const { franchise_name, branch_name, cnpj, address, phone, manager_name, wifi_ssid, wifi_pass, server_ip, support_email } = req.body;
     
     const sql = `UPDATE store_config SET 
@@ -128,15 +122,10 @@ app.post('/api/store/config', authenticateToken, requireAdmin, (req, res) => {
         WHERE id = 1`;
 
     storeDb.run(sql, [franchise_name, branch_name, cnpj, address, phone, manager_name, wifi_ssid, wifi_pass, server_ip, support_email], function(err) {
-        if (err) {
-            console.error("Erro ao salvar loja:", err);
-            return res.status(500).json({ error: err.message });
-        }
+        if (err) return res.status(500).json({ error: err.message });
         res.json({ message: "Configurações da loja salvas!" });
     });
 });
-
-// ... (resto do código igual)
 
 // =======================================================
 // 4. CONTROLE DE ESTOQUE (INVENTORY)
@@ -147,8 +136,14 @@ app.get('/api/inventory/products', authenticateToken, (req, res) => {
     const cat = req.query.category;
     let sql = "SELECT * FROM products";
     let params = [];
-    if (cat && cat !== 'all') { sql += " WHERE category = ?"; params.push(cat); }
+    
+    if (cat && cat !== 'all') {
+        sql += " WHERE category = ?";
+        params.push(cat);
+    }
+    
     sql += " ORDER BY name ASC";
+
     invDb.all(sql, params, (err, rows) => {
         if (err) return res.status(500).json({ error: err.message });
         res.json(rows);
@@ -243,9 +238,8 @@ app.get('/api/alerts/check', authenticateToken, (req, res) => {
         if (row && row.count > 0) {
             alerts.push({
                 title: "Estoque Crítico",
-                body: `Existem ${row.count} itens com o estoque em estado critico`,
-                priority: "high",
-                status: 1
+                body: `Existem ${row.count} itens abaixo do mínimo.`,
+                priority: "high"
             });
         }
         res.json(alerts);
@@ -255,6 +249,8 @@ app.get('/api/alerts/check', authenticateToken, (req, res) => {
 // =======================================================
 // 5. MÓDULO REFEIÇÕES (MEALS)
 // =======================================================
+
+// Colaboradores
 app.get('/api/meals/employees', authenticateToken, (req, res) => {
     mealsDb.all("SELECT * FROM employees ORDER BY name ASC", [], (err, rows) => res.json(rows));
 });
@@ -268,6 +264,7 @@ app.delete('/api/meals/employees/:id', authenticateToken, requireAdmin, (req, re
     mealsDb.run("DELETE FROM employees WHERE id = ?", req.params.id, () => res.json({ message: "Ok" }));
 });
 
+// Registrar Refeição (Criptografado)
 app.post('/api/meals/register', authenticateToken, (req, res) => {
     const { employee_name, role_type, food, drink, photo } = req.body;
     const enc = encrypt(photo);
@@ -276,6 +273,7 @@ app.post('/api/meals/register', authenticateToken, (req, res) => {
     () => res.json({ message: "Ok" }));
 });
 
+// Histórico Refeições (Descriptografa)
 app.get('/api/meals/history', authenticateToken, requireAdmin, (req, res) => {
     mealsDb.all("SELECT * FROM meal_logs ORDER BY id DESC LIMIT 50", [], (err, rows) => {
         const decryptedRows = rows.map(row => {

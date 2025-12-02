@@ -1,78 +1,181 @@
 <div class="container-fluid fade-in">
+    
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="fw-bold text-secondary ls-1">CONTROLE DE ESTOQUE</h4>
-        <ul class="nav nav-pills" id="invTab">
-            <li class="nav-item"><button class="nav-link active rounded-pill fw-bold" data-bs-toggle="pill" data-bs-target="#pills-count">Contagem</button></li>
-            <li class="nav-item admin-only"><button class="nav-link rounded-pill fw-bold" data-bs-toggle="pill" data-bs-target="#pills-manage">Produtos</button></li>
-            <li class="nav-item admin-only"><button class="nav-link rounded-pill fw-bold" data-bs-toggle="pill" data-bs-target="#pills-reports">Histórico</button></li>
+        <div>
+            <h4 class="fw-bold text-body ls-1">CONTROLE DE ESTOQUE</h4>
+            <span class="text-muted small">Gerenciamento de insumos e contagens</span>
+        </div>
+        
+        <ul class="nav nav-pills" id="inventoryTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active rounded-pill fw-bold" id="count-tab" data-bs-toggle="pill" data-bs-target="#pills-count" type="button">
+                    <i class="material-icons align-middle fs-6 me-1">edit_note</i> Contagem
+                </button>
+            </li>
+            <li class="nav-item admin-only" role="presentation">
+                <button class="nav-link rounded-pill fw-bold" id="manage-tab" data-bs-toggle="pill" data-bs-target="#pills-manage" type="button">
+                    <i class="material-icons align-middle fs-6 me-1">inventory_2</i> Produtos
+                </button>
+            </li>
+            <li class="nav-item admin-only" role="presentation">
+                <button class="nav-link rounded-pill fw-bold" id="reports-tab" data-bs-toggle="pill" data-bs-target="#pills-reports" type="button">
+                    <i class="material-icons align-middle fs-6 me-1">history</i> Histórico
+                </button>
+            </li>
         </ul>
     </div>
 
-    <div class="tab-content">
-        <div class="tab-pane fade show active" id="pills-count">
+    <div class="tab-content" id="pills-tabContent">
+        
+        <div class="tab-pane fade show active" id="pills-count" role="tabpanel">
             <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-                    <div>
-                        <label class="fw-bold text-muted small">LISTA:</label>
-                        <div class="btn-group ms-2">
-                            <input type="radio" class="btn-check" name="catFilter" id="catDaily" value="diaria" checked onchange="loadCountList()">
-                            <label class="btn btn-outline-danger btn-sm" for="catDaily">Diária</label>
-                            <input type="radio" class="btn-check" name="catFilter" id="catWeekly" value="semanal" onchange="loadCountList()">
-                            <label class="btn btn-outline-danger btn-sm" for="catWeekly">Semanal</label>
-                            <input type="radio" class="btn-check" name="catFilter" id="catMonthly" value="mensal" onchange="loadCountList()">
-                            <label class="btn btn-outline-danger btn-sm" for="catMonthly">Mensal</label>
+                <div class="card-header bg-transparent border-bottom py-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-7">
+                            <label class="fw-bold text-muted small d-block mb-2">SELECIONE A LISTA:</label>
+                            <div class="btn-group w-100" role="group">
+                                <input type="radio" class="btn-check" name="catFilter" id="catDaily" value="diaria" autocomplete="off" checked onchange="loadCountList()">
+                                <label class="btn btn-outline-danger" for="catDaily">Diária</label>
+
+                                <input type="radio" class="btn-check" name="catFilter" id="catWeekly" value="semanal" autocomplete="off" onchange="loadCountList()">
+                                <label class="btn btn-outline-danger" for="catWeekly">Semanal</label>
+
+                                <input type="radio" class="btn-check" name="catFilter" id="catMonthly" value="mensal" autocomplete="off" onchange="loadCountList()">
+                                <label class="btn btn-outline-danger" for="catMonthly">Mensal</label>
+                            </div>
+                        </div>
+                        <div class="col-md-5 text-end mt-3 mt-md-0">
+                            <button class="btn btn-success rounded-pill px-4 fw-bold shadow-sm" onclick="submitCount()">
+                                <i class="material-icons align-middle me-2">send</i> ENVIAR CONTAGEM
+                            </button>
                         </div>
                     </div>
-                    <button class="btn btn-success rounded-pill px-4" onclick="submitCount()">ENVIAR</button>
                 </div>
+                
                 <div class="card-body p-0">
-                    <table class="table table-hover align-middle mb-0">
-                        <thead class="table-light"><tr><th>Produto</th><th>Atual</th><th>Qtd</th><th class="text-center">Falta</th></tr></thead>
-                        <tbody id="count-list-body"></tbody>
+                    <div class="d-none d-md-block table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 40%;" class="ps-4">Produto</th>
+                                    <th>Estoque Atual</th>
+                                    <th>Nova Contagem</th>
+                                    <th class="text-center pe-4">Em Falta?</th>
+                                </tr>
+                            </thead>
+                            <tbody id="count-list-body">
+                                </tbody>
+                        </table>
+                    </div>
+
+                    </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="pills-manage" role="tabpanel">
+            
+            <div class="card border-0 shadow-sm mb-4 bg-body-tertiary">
+                <div class="card-body">
+                    <h6 class="fw-bold text-danger mb-3">
+                        <i class="material-icons align-middle me-2">add_circle</i> Cadastrar Produto
+                    </h6>
+                    
+                    <form id="product-form" class="row g-3" onsubmit="handleProductSubmit(event)">
+                        <input type="hidden" id="prod-id">
+                        
+                        <div class="col-md-4">
+                            <div class="form-floating">
+                                <input type="text" class="form-control" id="prod-name" placeholder="Nome" required>
+                                <label>Nome do Produto</label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-2">
+                            <div class="form-floating">
+                                <select class="form-select" id="prod-unit">
+                                    <option value="un">Unidade (un)</option>
+                                    <option value="kg">Quilo (kg)</option>
+                                    <option value="lt">Litro (l)</option>
+                                    <option value="cx">Caixa (cx)</option>
+                                    <option value="pct">Pacote (pct)</option>
+                                </select>
+                                <label>Unidade</label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <div class="form-floating">
+                                <select class="form-select" id="prod-cat">
+                                    <option value="diaria">Diária (Todas)</option>
+                                    <option value="semanal">Semanal (+Mensal)</option>
+                                    <option value="mensal">Mensal (Apenas)</option>
+                                </select>
+                                <label>Lista Principal</label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-3">
+                            <div class="form-floating">
+                                <input type="number" class="form-control" id="prod-min" placeholder="0" step="0.1">
+                                <label>Nível Crítico</label>
+                            </div>
+                        </div>
+                        
+                        <div class="col-12 text-end">
+                            <button type="button" class="btn btn-link text-muted text-decoration-none me-2" onclick="resetProdForm()">Cancelar</button>
+                            <button type="submit" class="btn btn-pizza-red rounded-pill px-4">Salvar Produto</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm overflow-hidden">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover align-middle mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th class="ps-4">Nome</th>
+                                <th>Categoria</th>
+                                <th>Estoque</th>
+                                <th>Crítico</th>
+                                <th class="text-end pe-4">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-prod-list"></tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <div class="tab-pane fade" id="pills-manage">
-            <div class="card border-0 shadow-sm mb-4 bg-body-tertiary">
-                <div class="card-body">
-                    <h6 class="fw-bold text-danger mb-3">Cadastrar</h6>
-                    <form id="product-form" class="row g-3">
-                        <input type="hidden" id="prod-id">
-                        <div class="col-md-4"><input type="text" class="form-control" id="prod-name" placeholder="Nome" required></div>
-                        <div class="col-md-2"><select class="form-select" id="prod-unit"><option value="un">un</option><option value="kg">kg</option><option value="cx">cx</option><option value="lt">lt</option></select></div>
-                        <div class="col-md-3"><select class="form-select" id="prod-cat"><option value="diaria">Diária (+Todas)</option><option value="semanal">Semanal (+Mensal)</option><option value="mensal">Mensal</option></select></div>
-                        <div class="col-md-3"><input type="number" class="form-control" id="prod-min" placeholder="Min Crítico" step="0.1"></div>
-                        <div class="col-12 text-end"><button type="submit" class="btn btn-pizza-red rounded-pill px-4">Salvar</button></div>
-                    </form>
+        <div class="tab-pane fade" id="pills-reports" role="tabpanel">
+            <div class="alert alert-secondary border-0 shadow-sm mb-3 d-flex align-items-center">
+                <i class="material-icons text-primary me-3">description</i>
+                <div>
+                    <strong>Relatórios de Sessão</strong>
+                    <div class="small opacity-75">Cada linha representa um envio de contagem. Clique em PDF para detalhes.</div>
                 </div>
             </div>
-            <div class="card border-0 shadow-sm">
-                <div class="card-body p-0">
-                    <table class="table table-striped align-middle mb-0"><thead class="table-dark"><tr><th>Nome</th><th>Cat.</th><th>Qtd</th><th>Min</th><th class="text-end">Ação</th></tr></thead><tbody id="admin-prod-list"></tbody></table>
-                </div>
-            </div>
-        </div>
-
-        <div class="tab-pane fade" id="pills-reports">
-            <div class="card border-0 shadow-sm">
-                <div class="card-body p-0">
-                    <table class="table table-hover align-middle">
+            
+            <div class="card border-0 shadow-sm overflow-hidden">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0" id="report-table">
                         <thead class="table-light">
                             <tr>
-                                <th>Data</th>
-                                <th>Hora</th>
+                                <th class="ps-4">Data/Hora</th>
                                 <th>Responsável</th>
-                                <th>Tipo</th>
+                                <th>Tipo de Contagem</th>
                                 <th>Itens</th>
                                 <th class="text-end pe-4">Ações</th>
                             </tr>
                         </thead>
-                        <tbody id="reports-list-body"></tbody>
+                        <tbody id="reports-list-body">
+                            </tbody>
                     </table>
                 </div>
             </div>
         </div>
+
     </div>
+    
+    <div class="py-4"></div>
 </div>
